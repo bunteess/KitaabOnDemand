@@ -1,9 +1,10 @@
 import uuid
 from contextlib import suppress
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import Depends, Query, status
 from sqlalchemy import ColumnElement, func, or_, select
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import admin_order_summary, staff_out, vendor_out
 from kitaab.domain import audit
 from kitaab.domain import auth as auth_domain
@@ -25,7 +26,7 @@ from kitaab.schemas.admin import (
 )
 from kitaab.security.deps import admin_ctx, me
 
-router = APIRouter(prefix="/admin", tags=["admin: people"])
+router = api_router(prefix="/admin", tags=["admin: people"])
 
 
 def _apply_vendor(ctx: Ctx, vendor: Vendor, body: VendorIn) -> None:

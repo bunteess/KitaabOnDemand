@@ -5,13 +5,18 @@ the fields type, title, status, detail and a machine-readable `code`. Clients
 switch on `code`, never on the human-readable text.
 """
 
+import logging
 from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from sqlalchemy.exc import OperationalError as SqlOperationalError
+from sqlalchemy.exc import TimeoutError as SqlTimeout
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+log = logging.getLogger(__name__)
 
 PROBLEM_BASE = "https://kitaabondemand.pk/problems/"
 PROBLEM_MEDIA_TYPE = "application/problem+json"
@@ -160,6 +165,20 @@ def install_problem_handlers(app: FastAPI) -> None:
         detail = exc.detail if isinstance(exc.detail, str) and exc.detail != title else None
         return problem_response(
             request, exc.status_code, code, title, detail, headers=getattr(exc, "headers", None)
+        )
+
+    @app.exception_handler(SqlTimeout)
+    @app.exception_handler(SqlOperationalError)
+    async def _busy(request: Request, exc: Exception) -> JSONResponse:
+        # Every database connection is in use (overload) or the database is
+        # unreachable: ask clients to retry shortly instead of failing hard.
+        log.warning("database unavailable", extra={"error": type(exc).__name__})
+        return problem_response(
+            request,
+            503,
+            "service-busy",
+            "The service is busy. Please try again in a moment.",
+            headers={"Retry-After": "5"},
         )
 
     @app.exception_handler(Exception)

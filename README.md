@@ -63,6 +63,7 @@ Wi-Fi, use the computer's LAN address in `infra/.env` and in
 - [Owner to-do](docs/OWNER_TODO.md): accounts, credentials and content only the owner can supply
 - [Integrations](docs/INTEGRATIONS.md): provider adapters and their verification status
 - [Screens](docs/design/screens.md): screen inventory and navigation for designers
+- [Security](docs/SECURITY.md): sign-in, authorisation matrix, files, money, log review, audits
 - [Performance](docs/PERF.md), [Deploy](docs/DEPLOY.md), [Runbook](docs/RUNBOOK.md), [Mobile release](docs/RELEASE_MOBILE.md)
 
 ## Ground rules

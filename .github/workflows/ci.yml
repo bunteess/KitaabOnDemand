@@ -150,8 +150,11 @@ jobs:
           node-version: "24"
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
+      - uses: astral-sh/setup-uv@v6
       - name: Start the stack with demo data
         run: make demo
+      - name: API scenarios (upload, order, courier, purge after 7 days, payment)
+        run: E2E_SKIP_STACK=1 make e2e
       - name: Playwright browser
         run: make web-install && cd apps/web && npx playwright install --with-deps chromium
       - name: Portal flows (Playwright)

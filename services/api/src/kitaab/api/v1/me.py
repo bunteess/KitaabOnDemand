@@ -1,8 +1,9 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import Depends, Request, status
 from sqlalchemy import delete, select, update
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import address_out, me_out
 from kitaab.domain import accounts
 from kitaab.domain import auth as auth_domain
@@ -23,7 +24,7 @@ from kitaab.schemas.me import (
 )
 from kitaab.security.deps import client_ip, customer_ctx, me, user_ctx
 
-router = APIRouter(prefix="/me", tags=["me"])
+router = api_router(prefix="/me", tags=["me"])
 
 MAX_ADDRESSES = 20
 

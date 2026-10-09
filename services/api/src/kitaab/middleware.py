@@ -3,11 +3,9 @@
 import logging
 import time
 import uuid
-from collections.abc import Awaitable, Callable
 
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.datastructures import MutableHeaders
+from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from kitaab.logging import request_id_var
@@ -17,32 +15,46 @@ log = logging.getLogger("kitaab.request")
 MAX_BODY_BYTES = 1024 * 1024  # JSON only: files go straight to storage
 
 
-class RequestContextMiddleware(BaseHTTPMiddleware):
-    async def dispatch(
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
-    ) -> Response:
-        incoming = request.headers.get("x-request-id", "")
+class RequestContextMiddleware:
+    """Request ID (from X-Request-ID or new), one access log line per request,
+    and a log entry with the traceback for unhandled errors. Plain ASGI: no
+    per-request task group, unlike Starlette's BaseHTTPMiddleware."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        headers = dict(scope.get("headers", []))
+        incoming = headers.get(b"x-request-id", b"").decode("latin-1")
         request_id = (
             incoming if 8 <= len(incoming) <= 64 and incoming.isascii() else uuid.uuid4().hex
         )
         token = request_id_var.set(request_id)
         started = time.perf_counter()
         status = 500
+
+        async def send_with_id(message: Message) -> None:
+            nonlocal status
+            if message["type"] == "http.response.start":
+                status = message["status"]
+                MutableHeaders(scope=message)["X-Request-ID"] = request_id
+            await send(message)
+
         try:
-            response = await call_next(request)
-            status = response.status_code
-            response.headers["X-Request-ID"] = request_id
-            return response
+            await self.app(scope, receive, send_with_id)
         except Exception:
-            log.exception("unhandled error", extra={"path": request.url.path})
+            log.exception("unhandled error", extra={"path": scope.get("path", "")})
             raise
         finally:
             # Path only: query strings can carry phone numbers (admin search).
             log.info(
                 "request",
                 extra={
-                    "method": request.method,
-                    "path": request.url.path,
+                    "method": scope.get("method", ""),
+                    "path": scope.get("path", ""),
                     "status": status,
                     "duration_ms": round((time.perf_counter() - started) * 1000, 1),
                 },
@@ -50,31 +62,38 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             request_id_var.reset(token)
 
 
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+class SecurityHeadersMiddleware:
     def __init__(self, app: ASGIApp, *, hsts: bool) -> None:
-        super().__init__(app)
+        self.app = app
         self.hsts = hsts
 
-    async def dispatch(
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
-    ) -> Response:
-        response = await call_next(request)
-        headers = response.headers
-        headers.setdefault("X-Content-Type-Options", "nosniff")
-        headers.setdefault("X-Frame-Options", "DENY")
-        headers.setdefault("Referrer-Policy", "no-referrer")
-        headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
-        is_html = headers.get("content-type", "").startswith("text/html")
-        is_docs = request.url.path in ("/docs", "/openapi.json")
-        if not is_html and not is_docs:
-            headers.setdefault(
-                "Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'"
-            )
-        if self.hsts:
-            headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-        if request.url.path.startswith("/api/"):
-            headers.setdefault("Cache-Control", "no-store")
-        return response
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        path: str = scope.get("path", "")
+
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = MutableHeaders(scope=message)
+                headers.setdefault("X-Content-Type-Options", "nosniff")
+                headers.setdefault("X-Frame-Options", "DENY")
+                headers.setdefault("Referrer-Policy", "no-referrer")
+                headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+                is_html = headers.get("content-type", "").startswith("text/html")
+                if not is_html and path not in ("/docs", "/openapi.json"):
+                    headers.setdefault(
+                        "Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'"
+                    )
+                if self.hsts:
+                    headers.setdefault(
+                        "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+                    )
+                if path.startswith("/api/"):
+                    headers.setdefault("Cache-Control", "no-store")
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)
 
 
 class _BodyTooLarge(Exception):  # noqa: N818
@@ -128,7 +147,8 @@ class BodySizeLimitMiddleware:
                 started = True
             await send(message)
 
-        # Inner BaseHTTPMiddleware task groups wrap the error in an ExceptionGroup.
+        # Anything that runs the app in a task group may wrap the error in an
+        # ExceptionGroup, so catch both forms.
         try:
             await self.app(scope, limited_receive, tracking_send)
         except* _BodyTooLarge:

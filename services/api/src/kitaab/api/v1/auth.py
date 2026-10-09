@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import Depends, Request, status
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import me_out
 from kitaab.domain import auth as auth_domain
 from kitaab.domain.context import Ctx
@@ -14,7 +15,7 @@ from kitaab.schemas.auth import (
 )
 from kitaab.security.deps import client_ip, public_ctx
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = api_router(prefix="/auth", tags=["auth"])
 
 
 def _pair(ctx: Ctx, tokens: auth_domain.Tokens) -> TokenPair:

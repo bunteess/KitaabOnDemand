@@ -34,6 +34,11 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://kitaab:kitaab@localhost:5432/kitaab"
     redis_url: str = "redis://localhost:6379/0"
+    # Per API process: request threads, and database connections kept open.
+    # The pool grows on demand up to threadpool_size connections.
+    threadpool_size: int = Field(default=40, ge=1)
+    db_pool_size: int = Field(default=10, ge=1)
+    db_pool_timeout_seconds: int = 10
 
     # Secrets
     jwt_secret: SecretStr = SecretStr("dev-only-jwt-secret-change-me-0123456789abcdef")

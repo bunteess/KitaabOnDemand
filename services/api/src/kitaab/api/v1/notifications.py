@@ -1,15 +1,16 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import Depends, Query, status
 from sqlalchemy import func, select, update
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import notification_out
 from kitaab.domain.context import Ctx
 from kitaab.models import Notification
 from kitaab.schemas.notifications import NotificationPage
 from kitaab.security.deps import customer_ctx, me
 
-router = APIRouter(prefix="/notifications", tags=["notifications"])
+router = api_router(prefix="/notifications", tags=["notifications"])
 
 
 @router.get("")

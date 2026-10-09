@@ -1,8 +1,9 @@
 from typing import Literal
 
-from fastapi import APIRouter, Depends
+from fastapi import Depends
 from sqlalchemy import select
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import city_out
 from kitaab.domain import pricing_store
 from kitaab.domain.app_settings import load as load_settings
@@ -24,7 +25,7 @@ from kitaab.schemas.catalog import (
 )
 from kitaab.security.deps import public_ctx
 
-router = APIRouter(tags=["catalog"])
+router = api_router(tags=["catalog"])
 
 
 @router.get("/app/config")

@@ -1,8 +1,9 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import Depends, Query, status
 from sqlalchemy import func, select
 
+from kitaab.api.routing import api_router
 from kitaab.domain import app_settings, audit, pricing_store
 from kitaab.domain.context import Ctx
 from kitaab.domain.pricing import PricingRules
@@ -19,7 +20,7 @@ from kitaab.schemas.admin import (
 )
 from kitaab.security.deps import admin_ctx
 
-router = APIRouter(prefix="/admin", tags=["admin: configuration"])
+router = api_router(prefix="/admin", tags=["admin: configuration"])
 
 
 def _version_out(

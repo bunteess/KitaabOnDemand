@@ -1,7 +1,8 @@
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import Depends, status
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import upload_out
 from kitaab.domain import uploads as upload_domain
 from kitaab.domain.context import Ctx
@@ -15,7 +16,7 @@ from kitaab.schemas.uploads import (
 )
 from kitaab.security.deps import customer_ctx, me
 
-router = APIRouter(prefix="/uploads", tags=["uploads"])
+router = api_router(prefix="/uploads", tags=["uploads"])
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)

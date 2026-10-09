@@ -383,3 +383,14 @@ waiting on a file that will never finish.
 The order list opens on the "To verify" tab. A search used to look only inside
 the open tab, so searching for an order that had moved on found nothing.
 Submitting a search now switches to "All".
+
+## D-051 · Database connections are held only while a thread runs · 2026-10-09
+
+The first load test collapsed at 300 users. Requests held their database
+connection while waiting for a request thread, which emptied the pool. Now the
+pool is sized to the thread pool, the sign-in check ends its read before the
+endpoint runs, and every endpoint closes its session as its last step
+(`kitaab/api/routing.py`). Dependencies that do no I/O are async, and the
+request middlewares are plain ASGI. When the database is overloaded or
+unreachable the API answers `503 service-busy` with `Retry-After`.
+docs/PERF.md has the numbers before and after.

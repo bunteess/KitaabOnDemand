@@ -84,8 +84,8 @@ verify: lint typecheck contracts-check test build ## Everything CI runs: lint, t
 api-install:
 	cd $(API) && $(UV) sync --frozen
 
-api-lint: api-install ## Lint the API (ruff)
-	cd $(API) && $(UV) run ruff check . && $(UV) run ruff format --check .
+api-lint: api-install ## Lint the API and the end-to-end and load tests (ruff)
+	cd $(API) && $(UV) run ruff check . ../../tests && $(UV) run ruff format --check . ../../tests
 
 api-typecheck: api-install ## Type-check the API (mypy)
 	cd $(API) && $(UV) run mypy

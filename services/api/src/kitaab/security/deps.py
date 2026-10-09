@@ -6,7 +6,7 @@ choice (tests/test_authz_matrix.py).
 """
 
 import uuid
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -24,12 +24,19 @@ bearer = HTTPBearer(
 )
 
 
-def get_services(request: Request) -> Services:
+# Dependencies that do no I/O are `async def` so they run on the event loop
+# instead of taking a request thread (docs/PERF.md).
+
+
+async def get_services(request: Request) -> Services:
     services: Services = request.app.state.services
     return services
 
 
-def get_session(services: Services = Depends(get_services)) -> Iterator[Session]:
+async def get_session(services: Services = Depends(get_services)) -> AsyncIterator[Session]:
+    """One session per request. An async dependency on purpose: its clean-up
+    runs on the event loop, so returning the connection never waits for a
+    free request thread (under load that wait deadlocked; docs/PERF.md)."""
     session = services.session()
     try:
         yield session
@@ -37,8 +44,11 @@ def get_session(services: Services = Depends(get_services)) -> Iterator[Session]
         session.close()
 
 
-def public_ctx(
-    session: Session = Depends(get_session), services: Services = Depends(get_services)
+async def public_ctx(
+    # scope="function": the connection goes back to the pool as soon as the
+    # endpoint has built its response, not after the response is sent.
+    session: Session = Depends(get_session, scope="function"),
+    services: Services = Depends(get_services),
 ) -> Ctx:
     return Ctx(session, services)
 
@@ -68,6 +78,9 @@ def user_ctx(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
 ) -> Ctx:
     _authenticate(ctx, credentials)
+    # End the read now: the connection goes back to the pool while the request
+    # waits for a thread to run the endpoint, which takes a fresh one.
+    ctx.session.commit()
     return ctx
 
 
@@ -77,21 +90,21 @@ def _role(ctx: Ctx, *roles: Role) -> Ctx:
     return ctx
 
 
-def customer_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
+async def customer_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
     return _role(ctx, Role.CUSTOMER)
 
 
-def admin_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
+async def admin_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
     return _role(ctx, Role.ADMIN)
 
 
-def vendor_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
+async def vendor_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
     if ctx.user is not None and ctx.user.role == Role.VENDOR and ctx.user.vendor_id is None:
         raise forbidden("This login is not linked to a vendor")
     return _role(ctx, Role.VENDOR)
 
 
-def staff_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
+async def staff_ctx(ctx: Ctx = Depends(user_ctx)) -> Ctx:
     return _role(ctx, Role.ADMIN, Role.VENDOR)
 
 

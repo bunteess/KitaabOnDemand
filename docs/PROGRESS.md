@@ -129,9 +129,27 @@ behind each choice.
   plus an image smoke check); a validation job that failed left the upload
   waiting forever (D-049); portal search only looked in the open tab (D-050).
 
+### Phase 6: Hardening (2026-10-09)
+
+- `make e2e`: full-stack scenarios over HTTP with mock providers. A 20 MB PDF
+  is uploaded in three parts, ordered with cash on delivery, reviewed,
+  assigned, downloaded by the vendor (SHA-256 checked) and printed, then
+  dispatched with the mock courier and delivered by webhook. Six days later
+  the file is still there; seven days later the purge has deleted it and the
+  order is intact. A book request is quoted, paid on the mock hosted checkout,
+  sourced and completed. CI runs these with the Playwright suite.
+- Load test (`make load`, docs/PERF.md). The first run collapsed at 300 users
+  because requests held database connections while waiting for threads; fixed
+  (D-051). Now: 179 requests/s at 300 users with p95 72 ms, and 242
+  requests/s at 800 users with no errors.
+- Security review (docs/SECURITY.md): authorisation matrix over all 108
+  routes, sign-in protections, file and money controls, and a personal-data
+  log review (none found in 62,000 lines). Dependency audits are clean for the
+  API and portal, and every app dependency is current.
+- The end-to-end and load test code is linted with the API's rules.
+
 ## Next
 
-- Phase 6: Hardening.
 - Phase 7: Release readiness.
 
 ## Known limitations of the build environment

@@ -276,3 +276,23 @@ def test_mock_pages(api: Api) -> None:
     assert cn in page.text
     assert "Booked" in page.text
     assert "No updates yet" in api.client.get("/mock/couriers/track/MOCK-000000").text
+
+
+@pytest.mark.parametrize("error", ["timeout", "operational"])
+def test_database_overload_returns_503(api: Api, error: str) -> None:
+    from sqlalchemy.exc import OperationalError
+    from sqlalchemy.exc import TimeoutError as PoolTimeout
+
+    router = APIRouter()
+
+    @router.get("/busy")
+    def busy() -> None:
+        if error == "timeout":
+            raise PoolTimeout("QueuePool limit reached")
+        raise OperationalError("SELECT 1", {}, Exception("connection refused"))
+
+    api.app.include_router(router)
+    response = TestClient(api.app, raise_server_exceptions=False).get("/busy")
+    assert response.status_code == 503
+    assert response.json()["code"] == "service-busy"
+    assert response.headers["Retry-After"] == "5"

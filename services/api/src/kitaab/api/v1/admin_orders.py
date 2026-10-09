@@ -2,10 +2,11 @@ import uuid
 from contextlib import suppress
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import Depends, Query, status
 from fastapi.responses import Response
 from sqlalchemy import ColumnElement, func, or_, select
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import admin_order_detail, admin_order_summary, refund_out
 from kitaab.domain import audit, payments, quotes, shipping
 from kitaab.domain.context import Ctx
@@ -33,7 +34,7 @@ from kitaab.schemas.admin import (
 from kitaab.schemas.common import FileUrl
 from kitaab.security.deps import admin_ctx
 
-router = APIRouter(prefix="/admin", tags=["admin: orders"])
+router = api_router(prefix="/admin", tags=["admin: orders"])
 
 
 def _order(ctx: Ctx, order_id: uuid.UUID) -> Order:

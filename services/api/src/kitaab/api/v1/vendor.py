@@ -1,10 +1,11 @@
 import uuid
 from datetime import timedelta
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import Depends, Query
 from fastapi.responses import Response
 from sqlalchemy import func, select
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import vendor_order_detail, vendor_order_summary
 from kitaab.domain import audit
 from kitaab.domain.context import Ctx
@@ -17,7 +18,7 @@ from kitaab.schemas.common import FileUrl
 from kitaab.schemas.vendor import VendorOrderDetail, VendorOrderPage
 from kitaab.security.deps import me, vendor_ctx
 
-router = APIRouter(prefix="/vendor", tags=["vendor"])
+router = api_router(prefix="/vendor", tags=["vendor"])
 
 
 def _assigned(ctx: Ctx, order_id: uuid.UUID, *, lock: bool = False) -> Order:

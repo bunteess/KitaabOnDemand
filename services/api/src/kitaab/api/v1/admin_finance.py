@@ -5,10 +5,11 @@ import uuid
 from collections import defaultdict
 from collections.abc import Iterable
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import Depends, Query, status
 from fastapi.responses import Response
 from sqlalchemy import select
 
+from kitaab.api.routing import api_router
 from kitaab.domain import audit, ledger
 from kitaab.domain.context import Ctx
 from kitaab.domain.orders import service as orders
@@ -31,7 +32,7 @@ from kitaab.schemas.finance import (
 )
 from kitaab.security.deps import admin_ctx
 
-router = APIRouter(prefix="/admin/finance", tags=["admin: finance"])
+router = api_router(prefix="/admin/finance", tags=["admin: finance"])
 
 
 def _csv(filename: str, header: list[str], rows: Iterable[Iterable[object]]) -> Response:

@@ -1,9 +1,10 @@
 import uuid
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import Depends, Query, status
 from sqlalchemy import func, select
 
+from kitaab.api.routing import api_router
 from kitaab.api.v1.presenters import order_detail, order_summary
 from kitaab.domain import quotes
 from kitaab.domain.context import Ctx
@@ -22,7 +23,7 @@ from kitaab.schemas.orders import (
 )
 from kitaab.security.deps import customer_ctx, me
 
-router = APIRouter(prefix="/orders", tags=["orders"])
+router = api_router(prefix="/orders", tags=["orders"])
 
 PAST = TERMINAL_STATUSES | {OrderStatus.DELIVERED}
 

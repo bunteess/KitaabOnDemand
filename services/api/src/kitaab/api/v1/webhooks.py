@@ -1,14 +1,15 @@
 import logging
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import Depends, Request
 
+from kitaab.api.routing import api_router
 from kitaab.domain import payments, shipping
 from kitaab.domain.context import Ctx
 from kitaab.problems import ProblemError, not_found
 from kitaab.providers.errors import InvalidSignature, NotConfigured
 from kitaab.security.deps import public_ctx
 
-router = APIRouter(prefix="/webhooks", tags=["webhooks"])
+router = api_router(prefix="/webhooks", tags=["webhooks"])
 log = logging.getLogger(__name__)
 
 BAD_SIGNATURE = ProblemError(401, "invalid-signature", "Signature check failed")

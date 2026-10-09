@@ -1,0 +1,5 @@
+# End-to-end and load tests share the API's lint rules (make lint).
+extend = "../services/api/pyproject.toml"
+
+[lint.per-file-ignores]
+"**" = ["S101", "S311"]

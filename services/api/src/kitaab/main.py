@@ -1,7 +1,10 @@
 """Application factory."""
 
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
+import anyio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -31,7 +34,16 @@ def _operation_id(route: APIRoute) -> str:
 
 def create_app(services: Services | None = None, settings: Settings | None = None) -> FastAPI:
     settings = settings or (services.settings if services else get_settings())
+    threads = settings.threadpool_size
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        # Sync endpoints run here; the database pool is sized to match (kitaab/db.py).
+        anyio.to_thread.current_default_thread_limiter().total_tokens = threads
+        yield
+
     app = FastAPI(
+        lifespan=lifespan,
         title="KitaabOnDemand API",
         version=__version__,
         description=(
