@@ -35,3 +35,14 @@ variable "noncurrent_version_days" {
   type        = number
   default     = 7
 }
+
+variable "backup_bucket_name" {
+  description = "Globally unique bucket name for database dumps, for example kitaabondemand-backups-prod."
+  type        = string
+}
+
+variable "backup_retention_days" {
+  description = "Database dumps in S3 are deleted after this many days."
+  type        = number
+  default     = 35
+}

@@ -17,3 +17,13 @@ output "api_policy_arn" {
   description = "Attach to an EC2 instance role instead of using the user, if the server runs on AWS."
   value       = aws_iam_policy.api_storage.arn
 }
+
+output "backup_bucket_name" {
+  description = "Set BACKUP_S3_BUCKET to this."
+  value       = aws_s3_bucket.backups.bucket
+}
+
+output "backup_user_name" {
+  description = "Create an access key for this user for BACKUP_AWS_ACCESS_KEY_ID (docs/DEPLOY.md)."
+  value       = aws_iam_user.backup.name
+}

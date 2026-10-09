@@ -124,8 +124,8 @@ services:
     networks: [internal]
     logging: *logging
 
-  # A compressed pg_dump every day at about 02:00 Pakistan time, kept for
-  # BACKUP_KEEP_DAYS. Copy /backups off the server too (docs/RUNBOOK.md).
+  # A compressed pg_dump every day at about 02:00 Pakistan time, kept on the
+  # server for BACKUP_KEEP_DAYS and copied to S3 by backup-ship (docs/RUNBOOK.md).
   backup:
     image: ${DOCKER_REGISTRY:-docker.io}/library/postgres:16-alpine
     restart: unless-stopped
@@ -143,6 +143,22 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks: [internal]
+    logging: *logging
+
+  # Uploads new dumps to the backup bucket every hour (infra/terraform/backups.tf).
+  backup-ship:
+    image: ${DOCKER_REGISTRY:-docker.io}/amazon/aws-cli:2.31.18
+    restart: unless-stopped
+    environment:
+      BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-}
+      AWS_REGION: ${S3_REGION:-ap-south-1}
+      AWS_ACCESS_KEY_ID: ${BACKUP_AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_AWS_SECRET_ACCESS_KEY:-}
+    volumes:
+      - ./backup/ship.sh:/usr/local/bin/ship.sh:ro
+      - ${BACKUP_DIR:-./backups}:/backups:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/ship.sh"]
     networks: [internal]
     logging: *logging
 
