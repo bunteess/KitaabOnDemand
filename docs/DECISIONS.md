@@ -47,6 +47,11 @@ can be used (`DOCKER_REGISTRY=mirror.gcr.io`). CI first used Docker Hub, hit
 the same limit (429 while pulling `node:24-alpine`), and now uses the mirror
 too.
 
+The Dockerfiles have no `# syntax=` line. That line makes BuildKit fetch its
+frontend from Docker Hub directly, past the mirror, and a Docker Hub outage
+(504 from `auth.docker.io`) failed a CI build that way. The frontend built
+into Docker 23 and later supports the secret and cache mounts the builds use.
+
 ## D-006 · Android builds and emulator tests run in CI · 2026-10-09
 
 The build sandbox blocks `dl.google.com`, so it has no Android SDK. Flutter

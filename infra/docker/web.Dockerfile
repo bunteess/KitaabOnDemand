@@ -1,4 +1,5 @@
-# syntax=docker/dockerfile:1.7
+# Uses the Dockerfile frontend built into Docker 23+ (no "syntax" line), so a
+# build pulls nothing from Docker Hub beyond DOCKER_REGISTRY (D-005).
 # Builds the React portal and serves it with Caddy as a non-root user.
 # Caddy also proxies /api to the API so the portal is same-origin.
 ARG DOCKER_REGISTRY=docker.io

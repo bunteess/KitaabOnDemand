@@ -1,4 +1,5 @@
-# syntax=docker/dockerfile:1.7
+# Uses the Dockerfile frontend built into Docker 23+ (no "syntax" line), so a
+# build pulls nothing from Docker Hub beyond DOCKER_REGISTRY (D-005).
 # Local S3-compatible storage. MinIO no longer publishes container images, so
 # we build a pinned commit from the Go module proxy (docs/DECISIONS.md, D-004).
 ARG DOCKER_REGISTRY=docker.io

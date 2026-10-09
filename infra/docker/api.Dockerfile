@@ -1,4 +1,5 @@
-# syntax=docker/dockerfile:1.7
+# Uses the Dockerfile frontend built into Docker 23+ (no "syntax" line), so a
+# build pulls nothing from Docker Hub beyond DOCKER_REGISTRY (D-005).
 # One Dockerfile, three runtime targets: api, worker, beat.
 #   docker build -f infra/docker/api.Dockerfile --target api .
 ARG DOCKER_REGISTRY=docker.io
