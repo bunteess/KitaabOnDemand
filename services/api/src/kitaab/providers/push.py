@@ -89,4 +89,6 @@ def build_push(
 ) -> PushProvider:
     if provider == "fcm":
         return FcmPushProvider(credentials_file)
-    return FakePushProvider(client)
+    if provider == "fake":
+        return FakePushProvider(client)
+    raise ValueError(f"Unknown PUSH_PROVIDER {provider!r}: use fcm or fake")

@@ -173,4 +173,7 @@ def build_payments(
             )
         elif code in REAL_GATEWAYS:
             providers.append(UnconfiguredPaymentProvider(code, REAL_GATEWAYS[code]))
+        else:
+            # A typo must not quietly switch a gateway off.
+            raise ValueError(f"Unknown payment provider {code!r} in PAYMENT_PROVIDERS")
     return PaymentRegistry(providers)

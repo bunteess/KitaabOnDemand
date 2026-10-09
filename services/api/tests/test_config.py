@@ -42,6 +42,7 @@ def test_safe_production_settings_boot() -> None:
         ({"review_mode_enabled": True}, "REVIEW_MODE_ENABLED"),
         ({"jwt_secret": SecretStr("dev-only-jwt-secret-change-me-0123456789abcdef")}, "JWT_SECRET"),
         ({"otp_pepper": SecretStr("short")}, "OTP_PEPPER"),
+        ({"data_encryption_key": SecretStr("")}, "DATA_ENCRYPTION_KEY"),
         ({"sms_provider": "mock"}, "SMS_PROVIDER"),
         ({"payment_providers": ["mock", "easypaisa"]}, "PAYMENT_PROVIDERS"),
         ({"courier_providers": ["mock"]}, "COURIER_PROVIDERS"),
@@ -122,13 +123,19 @@ def test_production_env_example_passes_the_safety_checks(monkeypatch: pytest.Mon
     import secrets
     from pathlib import Path
 
+    # Only the secrets are filled in; optional blanks (Sentry, providers not yet
+    # built) stay blank, as on a first deploy.
+    secret_keys = {"JWT_SECRET", "OTP_PEPPER", "DATA_ENCRYPTION_KEY", "MOCK_WEBHOOK_SECRET"}
     example = Path(__file__).resolve().parents[3] / "infra" / ".env.production.example"
     for line in example.read_text().splitlines():
         if "=" in line and not line.lstrip().startswith("#"):
-            key, value = line.split("=", 1)
-            monkeypatch.setenv(key.strip(), value.strip() or secrets.token_urlsafe(48))
+            key, value = (part.strip() for part in line.split("=", 1))
+            monkeypatch.setenv(key, secrets.token_urlsafe(48) if key in secret_keys else value)
     settings = Settings()
     assert settings.is_production
     assert production_problems(settings) == []
     assert settings.clamav_enabled
     assert not settings.dev_tools_enabled
+    assert settings.sentry_dsn in (None, "")
+    assert settings.payment_providers == []
+    assert settings.courier_providers == []

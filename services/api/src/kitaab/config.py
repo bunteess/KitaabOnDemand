@@ -166,7 +166,7 @@ def production_problems(settings: Settings) -> list[str]:
         )
     if settings.review_mode_enabled and settings.review_otp.get_secret_value() == "000000":
         problems.append("REVIEW_OTP must be changed from the default")
-    for name in ("jwt_secret", "otp_pepper", "mock_webhook_secret"):
+    for name in ("jwt_secret", "otp_pepper", "data_encryption_key", "mock_webhook_secret"):
         if _is_weak_secret(getattr(settings, name)):
             problems.append(f"{name.upper()} is missing, too short or a development default")
     if "ZGV2LW9ubHk" in settings.data_encryption_key.get_secret_value():

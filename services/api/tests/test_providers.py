@@ -138,6 +138,8 @@ def test_sms_outbox_in_redis(redis_client: Any) -> None:
 def test_push_outbox_in_redis(redis_client: Any) -> None:
     push = build_push("fake", None, redis_client)
     assert isinstance(push, FakePushProvider)
+    with pytest.raises(ValueError, match="PUSH_PROVIDER 'fmc'"):
+        build_push("fmc", None, redis_client)
     push.invalid_tokens.add("gone")
     assert push.send(["ok", "gone"], PushMessage("T", "B", {"k": "v"})) == ["gone"]
     assert redis_client.llen("kitaab:dev:push_outbox") == 1
@@ -198,7 +200,7 @@ def test_mock_signatures() -> None:
 
 def test_payment_registry() -> None:
     registry = build_payments(
-        ["mock", "jazzcash", "unknown"],
+        ["mock", "jazzcash"],
         public_base_url="http://x/",
         secret="s",
         failure_rate=0,
@@ -210,6 +212,8 @@ def test_payment_registry() -> None:
     cod_only = build_payments([], public_base_url="", secret="", failure_rate=0, latency_ms=0)
     assert cod_only.enabled_methods() == {PaymentMethod.COD}
     assert cod_only.for_method(PaymentMethod.CARD) is None
+    with pytest.raises(ValueError, match="'easypasia'"):
+        build_payments(["easypasia"], public_base_url="", secret="", failure_rate=0, latency_ms=0)
 
 
 def test_unconfigured_gateways_refuse() -> None:
@@ -236,7 +240,7 @@ def test_mock_gateway_failure_simulation() -> None:
 
 def test_couriers() -> None:
     registry = build_couriers(
-        ["mock", "leopards", "tcs", "fedex"],
+        ["mock", "leopards", "tcs"],
         public_base_url="http://x",
         secret="s",
         client=None,
@@ -258,6 +262,10 @@ def test_couriers() -> None:
     manual = ManualCourier()
     with pytest.raises(ProviderError):
         manual.create_consignment(SHIPMENT)
+    with pytest.raises(ValueError, match="'fedex'"):
+        build_couriers(
+            ["fedex"], public_base_url="", secret="", client=None, failure_rate=0, latency_ms=0
+        )
     assert manual.fetch_events("CN") == []
     with pytest.raises(InvalidSignature):
         manual.parse_webhook({}, b"")

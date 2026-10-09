@@ -250,5 +250,7 @@ def build_couriers(
             )
         elif code in REAL_COURIERS:
             couriers.append(UnconfiguredCourier(code, REAL_COURIERS[code]))
+        else:
+            raise ValueError(f"Unknown courier {code!r} in COURIER_PROVIDERS")
     couriers.append(ManualCourier())
     return CourierRegistry(couriers)
