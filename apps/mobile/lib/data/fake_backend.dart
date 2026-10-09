@@ -676,6 +676,28 @@ class FakeBackend implements HttpClientAdapter {
   void advance(String orderId, String status) =>
       _order(orderId).moveTo(status, _clock());
 
+  /// Test helper: what an admin dispatching with the mock courier does.
+  void dispatch(String orderId, {String cn = 'MOCK-100001'}) {
+    final order = _order(orderId)
+      ..tracking = {
+        'courier_code': 'mock',
+        'courier_name': 'Mock Courier',
+        'cn_number': cn,
+        'tracking_url': 'https://example.com/track/$cn',
+        'dispatched_at': _now(),
+        'last_status': 'Booked',
+      };
+    for (final s in [
+      'VERIFYING',
+      'ASSIGNED',
+      'IN_PRINT',
+      'READY_FOR_DISPATCH',
+    ]) {
+      order.moveTo(s, _clock());
+    }
+    order.moveTo('DISPATCHED', _clock());
+  }
+
   Json _acceptQuote(FakeOrder order, Json body) {
     final quote = order.quote;
     if (quote == null || order.status != 'QUOTED') {

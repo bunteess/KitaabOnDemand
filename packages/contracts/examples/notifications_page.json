@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "body": "We could not accept your PDF. Open the app to see why.",
+      "created_at": "2026-10-09T05:00:00Z",
+      "id": "00000000-0000-4000-8000-000000000023",
+      "kind": "UPLOAD_RESULT",
+      "order_id": null,
+      "read": false,
+      "title": "File not accepted"
+    },
+    {
+      "body": "We received Rs. 374 for order KD0000009.",
+      "created_at": "2026-10-09T05:00:00Z",
+      "id": "00000000-0000-4000-8000-000000000024",
+      "kind": "PAYMENT",
+      "order_id": "00000000-0000-4000-8000-000000000008",
+      "read": false,
+      "title": "Payment received"
+    },
+    {
+      "body": "Your PDF has 12 pages. You can now place your order.",
+      "created_at": "2026-10-09T05:00:00Z",
+      "id": "00000000-0000-4000-8000-000000000025",
+      "kind": "UPLOAD_RESULT",
+      "order_id": null,
+      "read": false,
+      "title": "File ready"
+    }
+  ],
+  "page": 1,
+  "page_size": 3,
+  "total": 11,
+  "unread_count": 11
+}

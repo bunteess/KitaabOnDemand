@@ -1,0 +1,20 @@
+[
+  {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "name": "Karachi",
+    "province": "Sindh",
+    "zone_code": "Z1"
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "name": "Lahore",
+    "province": "Punjab",
+    "zone_code": "Z1"
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000004",
+    "name": "Islamabad",
+    "province": "Islamabad Capital Territory",
+    "zone_code": "Z1"
+  }
+]

@@ -42,11 +42,15 @@ final uploadJobStoreProvider = Provider<UploadJobStore>((ref) {
       : MemoryUploadJobStore();
 });
 
+/// Overridden in tests with files held in memory.
+final localFilesProvider = Provider<LocalFiles>((ref) => const LocalFiles());
+
 final uploaderProvider = Provider<Uploader>((ref) {
   final fake = ref.watch(fakeBackendProvider);
   final uploader = Uploader(
     api: ref.watch(apiClientProvider),
     store: ref.watch(uploadJobStoreProvider),
+    files: ref.watch(localFilesProvider),
     storageDio: fake == null ? null : (Dio()..httpClientAdapter = fake),
   );
   ref.onDispose(uploader.dispose);

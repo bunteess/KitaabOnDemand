@@ -150,7 +150,45 @@ class PrintFlowController extends Notifier<PrintDraft> {
       sizeBytes: pdf.sizeBytes,
       localPageCount: state.pages,
     );
-    unawaited(ref.read(uploaderProvider).start(withPages));
+    unawaited(
+      ref
+          .read(uploaderProvider)
+          .start(
+            withPages,
+            options: {
+              'paper': state.paper.api,
+              'binding': state.binding.api,
+              'copies': state.copies,
+              'manual_pages': state.manualPages,
+            },
+          ),
+    );
+  }
+
+  /// Rebuild the draft from an interrupted upload (the app was closed).
+  void restore(UploadJob job) {
+    final options = job.options;
+    Paper? paper;
+    Binding? binding;
+    try {
+      paper = Paper.fromApi(options['paper']! as String);
+      binding = Binding.fromApi(options['binding']! as String);
+    } on Object {
+      // Jobs saved before options were stored: keep the defaults.
+    }
+    state = PrintDraft(
+      pdf: PickedPdf(
+        path: job.filePath,
+        name: job.fileName,
+        sizeBytes: job.sizeBytes,
+        localPageCount: job.clientPageCount,
+      ),
+      manualPages: options['manual_pages'] as int?,
+      copyrightDeclared: true,
+      paper: paper ?? Paper.localWhite,
+      binding: binding ?? Binding.softcoverPaperback,
+      copies: options['copies'] as int? ?? 1,
+    );
   }
 }
 

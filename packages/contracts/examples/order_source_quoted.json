@@ -1,0 +1,74 @@
+{
+  "awaiting_payment": false,
+  "binding": null,
+  "book": {
+    "author": "Umera Ahmed",
+    "edition": null,
+    "isbn": null,
+    "notes": null,
+    "preferred_binding": null,
+    "preferred_paper": null,
+    "title": "Aab-e-Hayat"
+  },
+  "can_cancel": true,
+  "code": "KD0000020",
+  "copies": 1,
+  "created_at": "2026-10-09T05:00:00Z",
+  "exit": null,
+  "id": "00000000-0000-4000-8000-000000000019",
+  "pages": null,
+  "paper": null,
+  "payment": null,
+  "price": null,
+  "quote": {
+    "binding": "PREMIUM_HARDCOVER",
+    "cod_fee_paisa": 5000,
+    "copies": 1,
+    "created_at": "2026-10-09T05:00:00Z",
+    "delivery_paisa": 20000,
+    "goods_paisa": 233800,
+    "id": "00000000-0000-4000-8000-000000000021",
+    "pages": 450,
+    "paper": "IMPORTED_YELLOW",
+    "status": "OPEN",
+    "total_if_cod_paisa": 258800,
+    "total_if_digital_paisa": 253800,
+    "valid_until": "2026-10-11T05:00:00Z"
+  },
+  "shipping": {
+    "area": "Gulberg",
+    "city_name": "Lahore",
+    "landmark": "Near Liberty Market",
+    "recipient_name": "Ayesha Khan",
+    "recipient_phone_e164": "+923217654321",
+    "street_address": "House 12, Street 4"
+  },
+  "status": "QUOTED",
+  "timeline": [
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "DONE",
+      "step": "PLACED"
+    },
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "CURRENT",
+      "step": "VERIFYING"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "OUT_FOR_DELIVERY"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "COMPLETED"
+    }
+  ],
+  "total_paisa": null,
+  "tracking": null,
+  "type": "SOURCE",
+  "updated_at": "2026-10-09T05:00:00Z",
+  "upload": null
+}

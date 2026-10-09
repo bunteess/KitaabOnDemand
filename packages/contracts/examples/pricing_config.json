@@ -1,0 +1,43 @@
+{
+  "effective_from": "2026-01-01T00:00:00Z",
+  "rules": {
+    "bindings": {
+      "PREMIUM_HARDCOVER": {
+        "fee_paisa": 50000,
+        "max_pages": 1200
+      },
+      "SOFTCOVER_PAPERBACK": {
+        "fee_paisa": 15000,
+        "max_pages": 800
+      }
+    },
+    "cod_fee_paisa": 5000,
+    "delivery_fees_paisa": {
+      "Z1": 20000,
+      "Z2": 25000,
+      "Z3": 35000
+    },
+    "max_copies": 50,
+    "papers": {
+      "IMPORTED_YELLOW": {
+        "brackets": [
+          {
+            "min_printed_pages": 2000,
+            "rate_per_page_paisa": 250
+          }
+        ],
+        "rate_per_page_paisa": 275
+      },
+      "LOCAL_WHITE": {
+        "brackets": [
+          {
+            "min_printed_pages": 2000,
+            "rate_per_page_paisa": 180
+          }
+        ],
+        "rate_per_page_paisa": 200
+      }
+    }
+  },
+  "version": 1
+}

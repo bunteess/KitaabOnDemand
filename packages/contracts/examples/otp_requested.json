@@ -1,0 +1,5 @@
+{
+  "expires_in_seconds": 300,
+  "phone_e164": "+923001234567",
+  "resend_after_seconds": 60
+}

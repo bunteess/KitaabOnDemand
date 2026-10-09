@@ -130,6 +130,7 @@ class _AddressFormScreenState extends ConsumerState<AddressFormScreen> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
+                isExpanded: true,
                 key: const Key('address-city'),
                 initialValue: _cityId,
                 decoration: InputDecoration(

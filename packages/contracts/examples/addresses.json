@@ -1,0 +1,18 @@
+[
+  {
+    "area": "Gulberg",
+    "city": {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "name": "Lahore",
+      "province": "Punjab",
+      "zone_code": "Z1"
+    },
+    "id": "00000000-0000-4000-8000-000000000005",
+    "is_default": true,
+    "label": null,
+    "landmark": "Near Liberty Market",
+    "recipient_name": "Ayesha Khan",
+    "recipient_phone_e164": "+923217654321",
+    "street_address": "House 12, Street 4"
+  }
+]

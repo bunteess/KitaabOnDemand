@@ -1,0 +1,101 @@
+{
+  "awaiting_payment": false,
+  "binding": "SOFTCOVER_PAPERBACK",
+  "book": null,
+  "can_cancel": false,
+  "code": "KD0000016",
+  "copies": 1,
+  "created_at": "2026-10-09T05:00:00Z",
+  "exit": {
+    "at": "2026-10-09T05:00:00Z",
+    "reason": "Changed my mind",
+    "status": "CANCELLED"
+  },
+  "id": "00000000-0000-4000-8000-000000000015",
+  "pages": 4,
+  "paper": "LOCAL_WHITE",
+  "payment": {
+    "amount_paisa": 40800,
+    "checkout_url": null,
+    "id": "00000000-0000-4000-8000-000000000018",
+    "method": "COD",
+    "paid_at": null,
+    "status": "FAILED"
+  },
+  "price": {
+    "binding": "SOFTCOVER_PAPERBACK",
+    "binding_paisa": 15000,
+    "calculated_goods_paisa": 15800,
+    "cod_fee_paisa": 5000,
+    "config_version": 1,
+    "copies": 1,
+    "delivery_paisa": 20000,
+    "delivery_zone": "Z1",
+    "goods_before_rounding_paisa": 15800,
+    "goods_override": false,
+    "goods_paisa": 15800,
+    "pages": 4,
+    "paper": "LOCAL_WHITE",
+    "payment_method": "COD",
+    "printed_pages": 4,
+    "printing_paisa": 800,
+    "rate_per_page_paisa": 200,
+    "rounding_paisa": 0,
+    "sourcing_cost_paisa": 0,
+    "total_paisa": 40800
+  },
+  "quote": null,
+  "shipping": {
+    "area": "Gulberg",
+    "city_name": "Lahore",
+    "landmark": "Near Liberty Market",
+    "recipient_name": "Ayesha Khan",
+    "recipient_phone_e164": "+923217654321",
+    "street_address": "House 12, Street 4"
+  },
+  "status": "CANCELLED",
+  "timeline": [
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "DONE",
+      "step": "PLACED"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "VERIFYING"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "PRINTING"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "OUT_FOR_DELIVERY"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "COMPLETED"
+    }
+  ],
+  "total_paisa": 40800,
+  "tracking": null,
+  "type": "PRINT",
+  "updated_at": "2026-10-09T05:00:00Z",
+  "upload": {
+    "client_page_count": null,
+    "created_at": "2026-10-09T05:00:00Z",
+    "filename": "notes.pdf",
+    "id": "00000000-0000-4000-8000-000000000017",
+    "page_count": 4,
+    "rejection_code": null,
+    "rejection_message": null,
+    "size_bytes": 2694,
+    "status": "VALID",
+    "uploaded_parts": [],
+    "validated_at": "2026-10-09T05:00:00Z"
+  }
+}

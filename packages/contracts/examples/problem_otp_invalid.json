@@ -1,0 +1,10 @@
+{
+  "code": "otp-invalid",
+  "extra": {
+    "attempts_left": 4
+  },
+  "instance": "/api/v1/auth/otp/verify",
+  "status": 422,
+  "title": "Wrong code",
+  "type": "https://kitaabondemand.pk/problems/otp-invalid"
+}

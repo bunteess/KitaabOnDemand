@@ -336,3 +336,30 @@ Access token expiry and issue time are checked against the application clock,
 not the machine clock, so tests and the development clock offset (used by the
 end-to-end run to move a week ahead) behave like real time passing. PyJWT
 still checks the signature, issuer and required claims.
+
+## D-046 · Push notifications in the app · 2026-10-09
+
+The app uses Firebase Cloud Messaging through the official `firebase_core` and
+`firebase_messaging` plugins, set up from dart-defines (D-024). Without those
+settings, or in mock mode, push is simply off. After sign-in the app registers
+its token with `POST /me/devices` (again when Firebase rotates it), and it
+unregisters before signing out. A message received while the app is open
+refreshes the inbox and order screens. Tapping a notification opens its
+`kitaab://app/...` link. Android shows them on an "Order updates" channel.
+Marked UNVERIFIED until tried with the owner's Firebase project.
+
+## D-047 · Recorded server responses keep the app honest · 2026-10-09
+
+The app's models were written from the OpenAPI contract before the server
+existed. `make contract-examples` now records real responses from a test run
+of the server into `packages/contracts/examples/`, with ids and tokens
+replaced by placeholders. The app's tests parse every one, and the server's
+tests fail if a response's shape changes without refreshing them.
+
+## D-048 · App tests run at phone size · 2026-10-09
+
+Widget tests used Flutter's default 800 × 600 test window, which hid layout
+problems. They now run at 392 × 851 dp, a common budget Android screen. The
+test font is wider than Roboto, so this also stands in for large system font
+sizes. Button rows that overflowed now wrap (`OverflowBar`), and drop-downs
+truncate long labels.

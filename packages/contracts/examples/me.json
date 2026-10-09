@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-10-09T05:00:00Z",
+  "email": null,
+  "full_name": null,
+  "id": "00000000-0000-4000-8000-000000000001",
+  "is_review_account": false,
+  "phone_e164": "+923001234567",
+  "phone_verified": true,
+  "role": "CUSTOMER",
+  "terms_accepted": true,
+  "vendor_id": null
+}

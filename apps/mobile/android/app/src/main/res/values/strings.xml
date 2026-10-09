@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_name comes from each flavor in build.gradle.kts. -->
+    <string name="notification_channel_orders">Order updates</string>
+</resources>

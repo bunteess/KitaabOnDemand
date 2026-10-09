@@ -183,8 +183,9 @@ class _PhoneOtpFormState extends State<PhoneOtpForm> {
           onPressed: _verify,
         ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        OverflowBar(
+          alignment: MainAxisAlignment.spaceBetween,
+          overflowAlignment: OverflowBarAlignment.center,
           children: [
             TextButton(
               onPressed: () => setState(() {

@@ -91,6 +91,7 @@ class _CalculatorScreenState extends ConsumerState<CalculatorScreen> {
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<City>(
+                isExpanded: true,
                 key: const Key('calc-city'),
                 initialValue: city,
                 decoration: InputDecoration(labelText: l.fieldCity),

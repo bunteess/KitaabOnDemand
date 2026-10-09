@@ -4,17 +4,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kitaab_app/app/app.dart';
 import 'package:kitaab_app/app/config.dart';
 import 'package:kitaab_app/app/providers.dart';
+import 'package:kitaab_app/app/push.dart';
 import 'package:kitaab_app/data/fake_backend.dart';
+import 'package:kitaab_app/data/push.dart';
+import 'package:kitaab_app/data/uploader.dart';
 import 'package:kitaab_app/features/print/print_flow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Set by integration_test/app_test.dart: keep the device's real screen.
+bool useDeviceScreen = false;
 
 /// Pumps the whole app against the in-memory [FakeBackend].
 Future<FakeBackend> pumpApp(
   WidgetTester tester, {
   FakeBackend? backend,
   PdfSource? pdfSource,
+  LocalFiles? files,
+  PushService? push,
+  UploadJobStore? jobStore,
   bool onboardingSeen = true,
 }) async {
+  if (!useDeviceScreen) {
+    // A typical budget Android phone: 1080 × 2340 pixels at 2.75×.
+    tester.view
+      ..physicalSize = const Size(1080, 2340)
+      ..devicePixelRatio = 2.75;
+    addTearDown(tester.view.reset);
+  }
   SharedPreferences.setMockInitialValues({'onboarding_seen': onboardingSeen});
   final fake = backend ?? FakeBackend();
   await tester.pumpWidget(
@@ -26,6 +42,10 @@ Future<FakeBackend> pumpApp(
         ),
         fakeBackendProvider.overrideWithValue(fake),
         if (pdfSource != null) pdfSourceProvider.overrideWithValue(pdfSource),
+        if (files != null) localFilesProvider.overrideWithValue(files),
+        if (push != null) pushServiceProvider.overrideWithValue(push),
+        if (jobStore != null)
+          uploadJobStoreProvider.overrideWithValue(jobStore),
       ],
       child: const KitaabApp(),
     ),

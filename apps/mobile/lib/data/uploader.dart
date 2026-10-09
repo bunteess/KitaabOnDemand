@@ -28,6 +28,16 @@ class PickedPdf {
   final int? localPageCount;
 }
 
+/// Reads the picked file in parts. Tests swap in files held in memory.
+class LocalFiles {
+  const LocalFiles();
+
+  bool exists(String path) => File(path).existsSync();
+
+  Stream<List<int>> read(String path, int start, int end) =>
+      File(path).openRead(start, end);
+}
+
 /// What the uploader persists so it can resume after a network drop or app kill.
 class UploadJob {
   UploadJob({
@@ -39,6 +49,7 @@ class UploadJob {
     required this.partCount,
     required this.clientPageCount,
     Set<int>? doneParts,
+    this.options = const {},
   }) : doneParts = doneParts ?? <int>{};
 
   factory UploadJob.fromJson(Json json) => UploadJob(
@@ -50,6 +61,7 @@ class UploadJob {
     partCount: json.integer('part_count'),
     clientPageCount: json.optInt('client_page_count'),
     doneParts: json.list<int>('done_parts').toSet(),
+    options: json.optObj('options') ?? const {},
   );
 
   final String uploadId;
@@ -60,6 +72,10 @@ class UploadJob {
   final int partCount;
   final int? clientPageCount;
   final Set<int> doneParts;
+
+  /// What the customer chose for this file (paper, binding, copies), so a
+  /// resumed upload continues to the same order.
+  final Json options;
 
   int partLength(int number) =>
       number < partCount ? partSize : sizeBytes - partSize * (partCount - 1);
@@ -73,6 +89,7 @@ class UploadJob {
     'part_count': partCount,
     'client_page_count': clientPageCount,
     'done_parts': doneParts.toList()..sort(),
+    'options': options,
   };
 }
 
@@ -196,6 +213,7 @@ class Uploader {
     required this.api,
     required this.store,
     Dio? storageDio,
+    this.files = const LocalFiles(),
     this.maxParallel = 3,
     this.pollInterval = const Duration(seconds: 2),
     this.maxPolls = 90,
@@ -206,6 +224,7 @@ class Uploader {
   final ApiClient api;
   final UploadJobStore store;
   final Dio storage;
+  final LocalFiles files;
   final int maxParallel;
   final Duration pollInterval;
   final int maxPolls;
@@ -232,7 +251,7 @@ class Uploader {
   /// A job left over from a previous session, if any.
   Future<UploadJob?> pendingJob() => store.load();
 
-  Future<UploadState> start(PickedPdf pdf) async {
+  Future<UploadState> start(PickedPdf pdf, {Json options = const {}}) async {
     _paused = false;
     _emit(
       UploadState(
@@ -255,6 +274,7 @@ class Uploader {
         partSize: session.partSizeBytes,
         partCount: session.partCount,
         clientPageCount: pdf.localPageCount,
+        options: options,
       );
       await store.save(job);
       return await _run(job, {for (final p in session.parts) p.number: p.url});
@@ -269,7 +289,7 @@ class Uploader {
     _paused = false;
     final job = saved ?? await store.load();
     if (job == null) return _state;
-    if (!File(job.filePath).existsSync()) {
+    if (!files.exists(job.filePath)) {
       await store.clear();
       _emit(
         const UploadState(
@@ -419,7 +439,7 @@ class Uploader {
       try {
         await storage.put<void>(
           urls[number]!,
-          data: File(job.filePath).openRead(start, start + length),
+          data: files.read(job.filePath, start, start + length),
           cancelToken: _cancel,
           options: Options(
             headers: {Headers.contentLengthHeader: length},

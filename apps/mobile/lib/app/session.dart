@@ -93,6 +93,9 @@ class SessionController extends Notifier<SessionState> {
       state = SignedIn(await ref.read(apiClientProvider).me());
 
   Future<void> signOut() async {
+    for (final hook in ref.read(beforeSignOutProvider)) {
+      await hook();
+    }
     await ref.read(apiClientProvider).logout();
     state = const SignedOut(onboardingSeen: true);
   }
@@ -100,6 +103,12 @@ class SessionController extends Notifier<SessionState> {
   void expired() =>
       state = const SignedOut(onboardingSeen: true, expired: true);
 }
+
+/// Work to do while the session is still valid, just before signing out
+/// (for example unregistering the push token). Features add to the list.
+final beforeSignOutProvider = Provider<List<Future<void> Function()>>(
+  (ref) => [],
+);
 
 final sessionProvider = NotifierProvider<SessionController, SessionState>(
   SessionController.new,

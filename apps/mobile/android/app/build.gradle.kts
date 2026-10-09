@@ -45,16 +45,20 @@ android {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             resValue("string", "app_name", "Kitaab Dev")
+            // The dev flavor talks to the API on the host over plain HTTP.
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
         }
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".staging"
             versionNameSuffix = "-staging"
             resValue("string", "app_name", "Kitaab Staging")
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
         create("prod") {
             dimension = "env"
             resValue("string", "app_name", "KitaabOnDemand")
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
 

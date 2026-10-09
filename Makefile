@@ -113,6 +113,9 @@ contracts: api-install ## Regenerate openapi.json and the typed web client
 	cd $(API) && $(UV) run python -m kitaab.openapi_export ../../$(CONTRACTS)/openapi.json
 	cd $(WEB) && $(NPM) run gen:api
 
+contract-examples: api-install deps-up ## Refresh packages/contracts/examples from a real server run
+	cd $(API) && KITAAB_UPDATE_EXAMPLES=1 $(UV) run pytest -q tests/test_contract_examples.py
+
 contracts-check: api-install web-install ## Fail if openapi.json or the web client is stale
 	cd $(API) && $(UV) run python -m kitaab.openapi_export --check ../../$(CONTRACTS)/openapi.json
 	cd $(WEB) && cp src/api/schema.d.ts /tmp/kitaab-schema.d.ts && $(NPM) run --silent gen:api > /dev/null \
@@ -146,7 +149,7 @@ web-audit: web-install ## Audit npm dependencies
 
 # ---------------------------------------------------------------- mobile
 
-.PHONY: mobile-install mobile-lint mobile-test mobile-build mobile-audit
+.PHONY: mobile-install mobile-lint mobile-test mobile-integration mobile-build mobile-audit
 mobile-install: $(MOBILE)/.dart_tool/.installed
 
 $(MOBILE)/.dart_tool/.installed: $(MOBILE)/pubspec.yaml $(MOBILE)/pubspec.lock
@@ -159,6 +162,10 @@ mobile-lint: mobile-install ## Analyze and format-check the Flutter app
 
 mobile-test: mobile-install ## Flutter unit and widget tests
 	cd $(MOBILE) && $(FLUTTER) test --coverage
+
+mobile-integration: mobile-install ## Customer flows on a running Android emulator or device
+	cd $(MOBILE) && $(FLUTTER) test integration_test/app_test.dart --flavor dev \
+		--dart-define-from-file=config/dev.json
 
 mobile-build: mobile-install ## Release Android App Bundle (needs the Android SDK)
 	@if [ -n "$${ANDROID_HOME:-$${ANDROID_SDK_ROOT:-}}" ]; then \

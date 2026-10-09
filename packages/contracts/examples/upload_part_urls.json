@@ -1,0 +1,9 @@
+{
+  "parts": [
+    {
+      "number": 1,
+      "url": "https://storage.example/presigned"
+    }
+  ],
+  "urls_expire_at": "2026-10-10T05:00:00Z"
+}

@@ -147,6 +147,7 @@ class _RequestBookScreenState extends ConsumerState<RequestBookScreen> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<Paper?>(
+              isExpanded: true,
               initialValue: _paper,
               decoration: InputDecoration(labelText: l.fieldPreferredPaper),
               items: [
@@ -158,6 +159,7 @@ class _RequestBookScreenState extends ConsumerState<RequestBookScreen> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<Binding?>(
+              isExpanded: true,
               initialValue: _binding,
               decoration: InputDecoration(labelText: l.fieldPreferredBinding),
               items: [

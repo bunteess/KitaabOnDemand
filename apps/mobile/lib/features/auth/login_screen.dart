@@ -109,8 +109,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            // Wraps onto two lines with large system font sizes.
+            OverflowBar(
+              alignment: MainAxisAlignment.center,
+              overflowAlignment: OverflowBarAlignment.center,
               children: [
                 TextButton(
                   onPressed: () => context.push('/legal/terms'),

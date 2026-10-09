@@ -1,0 +1,13 @@
+{
+  "client_page_count": null,
+  "created_at": "2026-10-09T05:00:00Z",
+  "filename": "broken.pdf",
+  "id": "00000000-0000-4000-8000-000000000007",
+  "page_count": null,
+  "rejection_code": "CORRUPT",
+  "rejection_message": "The file is damaged",
+  "size_bytes": 15,
+  "status": "REJECTED",
+  "uploaded_parts": [],
+  "validated_at": "2026-10-09T05:00:00Z"
+}

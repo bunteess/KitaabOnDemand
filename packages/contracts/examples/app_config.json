@@ -1,0 +1,30 @@
+{
+  "cod_max_order_value_paisa": null,
+  "max_upload_bytes": 157286400,
+  "payment_methods": [
+    {
+      "enabled": true,
+      "method": "COD"
+    },
+    {
+      "enabled": true,
+      "method": "EASYPAISA"
+    },
+    {
+      "enabled": true,
+      "method": "JAZZCASH"
+    },
+    {
+      "enabled": true,
+      "method": "CARD"
+    }
+  ],
+  "support": {
+    "email": "support@example.com",
+    "hours": "Mon to Sat, 10 am to 6 pm",
+    "phone": "+920000000000",
+    "whatsapp": "+920000000000"
+  },
+  "terms_version": "placeholder-2026-10",
+  "upload_part_bytes": 8388608
+}

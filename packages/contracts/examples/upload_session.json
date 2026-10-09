@@ -1,0 +1,24 @@
+{
+  "part_count": 1,
+  "part_size_bytes": 8388608,
+  "parts": [
+    {
+      "number": 1,
+      "url": "https://storage.example/presigned"
+    }
+  ],
+  "upload": {
+    "client_page_count": 12,
+    "created_at": "2026-10-09T05:00:00Z",
+    "filename": "notes.pdf",
+    "id": "00000000-0000-4000-8000-000000000006",
+    "page_count": null,
+    "rejection_code": null,
+    "rejection_message": null,
+    "size_bytes": 6287,
+    "status": "AWAITING_PARTS",
+    "uploaded_parts": [],
+    "validated_at": null
+  },
+  "urls_expire_at": "2026-10-10T05:00:00Z"
+}

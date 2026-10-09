@@ -90,9 +90,31 @@ behind each choice.
   the compose stack and the portal. `make api-dev` reads `services/api/.env`,
   or the example when there is none.
 
+### Phase 4: Android app (2026-10-09)
+
+- Checked against the real server: every recorded response in
+  `packages/contracts/examples` parses with the app's models (D-047).
+- Push notifications: Firebase when configured, token registration and
+  removal, refresh on arrival, open the order on tap (D-046). Android channel
+  "Order updates".
+- Deep links `kitaab://app/orders/{id}` and
+  `kitaab://app/payment-result?order={id}` (the mock checkout's return link).
+- Android manifest fixed for release builds: the main manifest lacked the
+  INTERNET permission (only debug builds had it). Also added the notification
+  permission, package visibility for checkout, phone and email links,
+  cleartext HTTP only in the dev flavor, and no backups of the token store.
+- An interrupted upload keeps the customer's paper, binding and copies, and
+  resuming restores them.
+- Layout fixes found by running tests at phone size (D-048).
+- Tests: 100 (up from 82). New flow tests cover a COD print order from
+  picking the PDF to tracking, a resumed upload, a book request whose quote
+  arrives by push, opening an order from a notification, and sign-out
+  unregistering the device. The same flows run on an Android emulator in CI
+  (`make mobile-integration`, job "Android emulator").
+- README: running the app on the emulator against the local stack.
+
 ## Next
 
-- Phase 4: Android app.
 - Phase 5: Web portal.
 - Phase 6: Hardening.
 - Phase 7: Release readiness.

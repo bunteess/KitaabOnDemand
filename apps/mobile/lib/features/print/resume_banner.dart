@@ -23,6 +23,7 @@ class ResumeUploadBanner extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () {
+              ref.read(printFlowProvider.notifier).restore(job);
               ref.read(uploaderProvider).resume(job);
               ref.invalidate(pendingUploadProvider);
               context.push('/print/upload');

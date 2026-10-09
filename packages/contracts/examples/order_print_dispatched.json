@@ -1,0 +1,104 @@
+{
+  "awaiting_payment": false,
+  "binding": "SOFTCOVER_PAPERBACK",
+  "book": null,
+  "can_cancel": false,
+  "code": "KD0000009",
+  "copies": 1,
+  "created_at": "2026-10-09T05:00:00Z",
+  "exit": null,
+  "id": "00000000-0000-4000-8000-000000000008",
+  "pages": 12,
+  "paper": "LOCAL_WHITE",
+  "payment": {
+    "amount_paisa": 37400,
+    "checkout_url": null,
+    "id": "00000000-0000-4000-8000-000000000012",
+    "method": "EASYPAISA",
+    "paid_at": "2026-10-09T05:00:00Z",
+    "status": "PAID"
+  },
+  "price": {
+    "binding": "SOFTCOVER_PAPERBACK",
+    "binding_paisa": 15000,
+    "calculated_goods_paisa": 17400,
+    "cod_fee_paisa": 0,
+    "config_version": 1,
+    "copies": 1,
+    "delivery_paisa": 20000,
+    "delivery_zone": "Z1",
+    "goods_before_rounding_paisa": 17400,
+    "goods_override": false,
+    "goods_paisa": 17400,
+    "pages": 12,
+    "paper": "LOCAL_WHITE",
+    "payment_method": "EASYPAISA",
+    "printed_pages": 12,
+    "printing_paisa": 2400,
+    "rate_per_page_paisa": 200,
+    "rounding_paisa": 0,
+    "sourcing_cost_paisa": 0,
+    "total_paisa": 37400
+  },
+  "quote": null,
+  "shipping": {
+    "area": "Gulberg",
+    "city_name": "Lahore",
+    "landmark": "Near Liberty Market",
+    "recipient_name": "Ayesha Khan",
+    "recipient_phone_e164": "+923217654321",
+    "street_address": "House 12, Street 4"
+  },
+  "status": "DISPATCHED",
+  "timeline": [
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "DONE",
+      "step": "PLACED"
+    },
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "DONE",
+      "step": "VERIFYING"
+    },
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "DONE",
+      "step": "PRINTING"
+    },
+    {
+      "at": "2026-10-09T05:00:00Z",
+      "state": "CURRENT",
+      "step": "OUT_FOR_DELIVERY"
+    },
+    {
+      "at": null,
+      "state": "UPCOMING",
+      "step": "COMPLETED"
+    }
+  ],
+  "total_paisa": 37400,
+  "tracking": {
+    "cn_number": "MOCK-100014",
+    "courier_code": "mock",
+    "courier_name": "Mock Courier",
+    "dispatched_at": "2026-10-09T05:00:00Z",
+    "last_status": "Booked",
+    "tracking_url": "http://testserver/mock/couriers/track/MOCK-100014"
+  },
+  "type": "PRINT",
+  "updated_at": "2026-10-09T05:00:00Z",
+  "upload": {
+    "client_page_count": 12,
+    "created_at": "2026-10-09T05:00:00Z",
+    "filename": "notes.pdf",
+    "id": "00000000-0000-4000-8000-000000000006",
+    "page_count": 12,
+    "rejection_code": null,
+    "rejection_message": null,
+    "size_bytes": 6287,
+    "status": "VALID",
+    "uploaded_parts": [],
+    "validated_at": "2026-10-09T05:00:00Z"
+  }
+}
