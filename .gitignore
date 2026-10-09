@@ -48,3 +48,4 @@ tests/e2e/.artifacts/
 *.iml
 .vscode/*
 !.vscode/extensions.json
+infra/docker/.build-ca.crt

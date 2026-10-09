@@ -59,7 +59,9 @@ so they are checked on every machine.
 
 Builds behind a TLS-intercepting proxy need the proxy's CA inside the build
 container. Each Dockerfile accepts an optional BuildKit secret `build_ca`. If
-it is absent nothing changes. Set `BUILD_CA_FILE=/path/to/ca.crt` to use it.
+it is absent nothing changes. Copy the CA to `infra/docker/.build-ca.crt` (git-ignored) and set
+`BUILD_CA_FILE=./docker/.build-ca.crt`. The file must be inside the repository
+because `docker buildx bake` only reads files under the working directory.
 
 ## D-008 · Typed web client from the OpenAPI file · 2026-10-09
 

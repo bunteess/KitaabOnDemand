@@ -3,7 +3,8 @@
 # Tool overrides: FLUTTER, UV, NPM. Set STRICT=1 (as CI does) to fail instead
 # of skipping steps whose toolchain is missing (the Android SDK).
 # Set DOCKER_REGISTRY=mirror.gcr.io if Docker Hub rate-limits you, and
-# BUILD_CA_FILE=/path/ca.crt behind a TLS-intercepting proxy.
+# BUILD_CA_FILE=./docker/.build-ca.crt (relative to infra/, inside the repo) behind
+# a TLS-intercepting proxy.
 
 SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c

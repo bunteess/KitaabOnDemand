@@ -166,7 +166,9 @@ services:
 
 secrets:
   build_ca:
-    file: ${BUILD_CA_FILE:-/dev/null}
+    # An empty file means "no extra CA". Point BUILD_CA_FILE at a file inside the
+    # repository (for example ./docker/.build-ca.crt) so buildx may read it.
+    file: ${BUILD_CA_FILE:-./docker/empty-build-ca.crt}
 
 volumes:
   pgdata:
