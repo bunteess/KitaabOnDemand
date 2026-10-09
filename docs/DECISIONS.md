@@ -43,7 +43,9 @@ through boto3.
 
 Docker Hub rate-limits anonymous pulls from the build sandbox. Every image and
 base image reference starts with `${DOCKER_REGISTRY:-docker.io}` so a mirror
-can be used (`DOCKER_REGISTRY=mirror.gcr.io`). CI uses Docker Hub.
+can be used (`DOCKER_REGISTRY=mirror.gcr.io`). CI first used Docker Hub, hit
+the same limit (429 while pulling `node:24-alpine`), and now uses the mirror
+too.
 
 ## D-006 · Android builds and emulator tests run in CI · 2026-10-09
 
@@ -365,7 +367,9 @@ tests fail if a response's shape changes without refreshing them.
 ## D-048 · App tests run at phone size · 2026-10-09
 
 Widget tests used Flutter's default 800 × 600 test window, which hid layout
-problems. They now run at 392 × 851 dp, a common budget Android screen. The
+problems. They now run at 360 × 640 dp, the smallest common budget Android
+screen. (A first attempt at 392 × 851 passed locally but missed a scrolling
+case the CI emulator hit.) The
 test font is wider than Roboto, so this also stands in for large system font
 sizes. Button rows that overflowed now wrap (`OverflowBar`), and drop-downs
 truncate long labels.

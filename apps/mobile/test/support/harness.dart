@@ -25,10 +25,10 @@ Future<FakeBackend> pumpApp(
   bool onboardingSeen = true,
 }) async {
   if (!useDeviceScreen) {
-    // A typical budget Android phone: 1080 × 2340 pixels at 2.75×.
+    // A small budget Android phone: 720 × 1280 pixels at 2× (360 × 640 dp).
     tester.view
-      ..physicalSize = const Size(1080, 2340)
-      ..devicePixelRatio = 2.75;
+      ..physicalSize = const Size(720, 1280)
+      ..devicePixelRatio = 2;
     addTearDown(tester.view.reset);
   }
   SharedPreferences.setMockInitialValues({'onboarding_seen': onboardingSeen});

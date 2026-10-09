@@ -25,20 +25,30 @@ Future<void> pumpUntil(
   await tester.pump();
 }
 
-/// Taps the widget with [key], scrolling the page down to it first if the
-/// list has not built it yet.
-Future<void> tapKey(WidgetTester tester, String key) async {
-  final finder = find.byKey(Key(key));
-  if (finder.evaluate().isEmpty) {
-    await tester.scrollUntilVisible(
-      finder,
-      200,
-      scrollable: find
+/// The page's own vertical scroll view: the tallest one on screen, so a
+/// multi-line text field's inner scrollable is never picked.
+Finder _pageScrollable() {
+  final scrollables =
+      find
           .byWidgetPredicate(
             (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
           )
-          .last,
-    );
+          .evaluate()
+          .toList()
+        ..sort((a, b) => (b.size?.height ?? 0).compareTo(a.size?.height ?? 0));
+  final page = scrollables.first;
+  return find.byElementPredicate((element) => element == page);
+}
+
+/// Taps the widget with [key], closing the keyboard and scrolling the page
+/// down to it first if the list has not built it yet (real devices are
+/// shorter than the test window, and the keyboard takes half the screen).
+Future<void> tapKey(WidgetTester tester, String key) async {
+  FocusManager.instance.primaryFocus?.unfocus();
+  await tester.pumpAndSettle();
+  final finder = find.byKey(Key(key));
+  if (finder.evaluate().isEmpty) {
+    await tester.scrollUntilVisible(finder, 200, scrollable: _pageScrollable());
   }
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
