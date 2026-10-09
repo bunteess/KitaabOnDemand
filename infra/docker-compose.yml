@@ -1,0 +1,173 @@
+# Development and test stack.
+#
+#   make up        start everything (API on :8000, portal on :8080, MinIO console on :9001)
+#   make deps-up   start only Postgres, Redis and MinIO (for running the API or tests on the host)
+#
+# Every image reference starts with DOCKER_REGISTRY so a mirror can be used
+# (docs/DECISIONS.md, D-005). All values here are development-only defaults.
+name: kitaab
+
+x-build-secrets: &build-secrets
+  secrets:
+    - build_ca
+
+x-api-env: &api-env
+  ENVIRONMENT: development
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  DATABASE_URL: postgresql+psycopg://kitaab:kitaab@postgres:5432/kitaab
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: dev-only-jwt-secret-change-me-0123456789abcdef
+  OTP_PEPPER: dev-only-otp-pepper-change-me
+  DATA_ENCRYPTION_KEY: ZGV2LW9ubHkta2V5LWNoYW5nZS1tZS0wMTIzNDU2Nzg=
+  S3_ENDPOINT_URL: http://minio:9000
+  S3_PUBLIC_ENDPOINT_URL: ${S3_PUBLIC_ENDPOINT_URL:-http://localhost:9000}
+  S3_BUCKET: kitaab-dev
+  S3_REGION: ap-south-1
+  AWS_ACCESS_KEY_ID: kitaab-minio
+  AWS_SECRET_ACCESS_KEY: kitaab-minio-secret
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8000}
+  WEB_ORIGINS: http://localhost:8080,http://localhost:5173
+  DEV_TOOLS_ENABLED: "true"
+  REVIEW_MODE_ENABLED: ${REVIEW_MODE_ENABLED:-false}
+  CLAMAV_ENABLED: ${CLAMAV_ENABLED:-false}
+  CLAMAV_HOST: clamav
+  SMS_PROVIDER: mock
+  PAYMENT_PROVIDERS: mock
+  COURIER_PROVIDERS: mock
+  PUSH_PROVIDER: fake
+  MOCK_PROVIDER_FAILURE_RATE: ${MOCK_PROVIDER_FAILURE_RATE:-0}
+  MOCK_PROVIDER_LATENCY_MS: ${MOCK_PROVIDER_LATENCY_MS:-150}
+  INTERNAL_API_URL: http://api:8000
+
+services:
+  postgres:
+    image: ${DOCKER_REGISTRY:-docker.io}/library/postgres:16-alpine
+    environment:
+      POSTGRES_USER: kitaab
+      POSTGRES_PASSWORD: kitaab
+      POSTGRES_DB: kitaab
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init-test-db.sql:/docker-entrypoint-initdb.d/10-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kitaab -d kitaab"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: ${DOCKER_REGISTRY:-docker.io}/library/redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  minio:
+    build:
+      context: ..
+      dockerfile: infra/docker/minio.Dockerfile
+      args:
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY:-docker.io}
+      <<: *build-secrets
+    image: kitaab/minio:local
+    environment:
+      MINIO_ROOT_USER: kitaab-minio
+      MINIO_ROOT_PASSWORD: kitaab-minio-secret
+      # Enables SSE-S3 locally so uploads are encrypted as in production.
+      MINIO_KMS_SECRET_KEY: kitaab-dev-key:ZGV2LW9ubHkta21zLWtleS1mb3ItbWluaW8tMDAwMDA=
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - miniodata:/data
+
+  clamav:
+    profiles: ["clamav"]
+    image: ${DOCKER_REGISTRY:-docker.io}/clamav/clamav:stable
+    ports:
+      - "3310:3310"
+
+  migrate:
+    profiles: ["app"]
+    build: &api-build
+      context: ..
+      dockerfile: infra/docker/api.Dockerfile
+      target: api
+      args:
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY:-docker.io}
+      <<: *build-secrets
+    image: kitaab/api:local
+    environment: *api-env
+    command: ["kitaab", "migrate", "--init-storage"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    profiles: ["app"]
+    build: *api-build
+    image: kitaab/api:local
+    environment: *api-env
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  worker:
+    profiles: ["app"]
+    build:
+      <<: *api-build
+      target: worker
+    image: kitaab/worker:local
+    environment: *api-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  beat:
+    profiles: ["app"]
+    build:
+      <<: *api-build
+      target: beat
+    image: kitaab/beat:local
+    environment: *api-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  web:
+    profiles: ["app"]
+    build:
+      context: ..
+      dockerfile: infra/docker/web.Dockerfile
+      args:
+        DOCKER_REGISTRY: ${DOCKER_REGISTRY:-docker.io}
+      <<: *build-secrets
+    image: kitaab/web:local
+    ports:
+      - "${WEB_PORT:-8080}:8080"
+    depends_on:
+      - api
+
+secrets:
+  build_ca:
+    file: ${BUILD_CA_FILE:-/dev/null}
+
+volumes:
+  pgdata:
+  miniodata:

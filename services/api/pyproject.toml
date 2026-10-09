@@ -1,0 +1,112 @@
+[project]
+name = "kitaab-api"
+version = "0.1.0"
+description = "KitaabOnDemand API, workers and scheduled jobs"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "alembic>=1.16",
+  "argon2-cffi>=25.1",
+  "boto3>=1.40",
+  "celery[redis]>=5.5",
+  "cryptography>=45",
+  "email-validator>=2.2",
+  "fastapi>=0.118",
+  "firebase-admin>=7.1",
+  "google-auth>=2.40",
+  "httpx2>=2.13",
+  "pikepdf>=9.11",
+  "psycopg[binary]>=3.2",
+  "pydantic>=2.11",
+  "pydantic-settings>=2.10",
+  "pyjwt>=2.10",
+  "pyotp>=2.9",
+  "pypdf>=6.1",
+  "python-magic>=0.4.27",
+  "python-multipart>=0.0.20",
+  "redis>=6.4",
+  "reportlab>=4.4",
+  "sentry-sdk>=2.39",
+  "sqlalchemy>=2.0.43",
+  "uvicorn[standard]>=0.37",
+]
+
+[project.scripts]
+kitaab = "kitaab.cli:main"
+
+[dependency-groups]
+dev = [
+  "celery-types>=0.23",
+  "mypy>=1.18",
+  "pip-audit>=2.9",
+  "pytest>=8.4",
+  "pytest-cov>=7.0",
+  "ruff>=0.13",
+  "types-reportlab>=4.4",
+  "boto3-stubs[s3]>=1.40",
+]
+load = [
+  "locust>=2.41",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kitaab"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF", "N", "C4", "PT", "DTZ", "T20"]
+ignore = [
+  "B008",   # FastAPI dependencies are declared as default arguments
+  "RUF012", # SQLAlchemy and pydantic class attributes
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S311", "PT011"]
+"migrations/**" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+packages = ["kitaab"]
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["magic", "pikepdf.*", "pyotp", "google.*", "firebase_admin.*", "kombu.*", "botocore.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "integration: needs Postgres, Redis and MinIO",
+]
+filterwarnings = [
+  "error::DeprecationWarning:kitaab.*",
+]
+
+[tool.coverage.run]
+source = ["kitaab"]
+branch = true
+
+[tool.coverage.report]
+skip_covered = true
+show_missing = true
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "\\.\\.\\.",
+]

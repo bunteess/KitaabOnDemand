@@ -1,0 +1,118 @@
+name: CI
+
+# Runs the same checks as `make verify`, split into parallel jobs.
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  STRICT: "1"
+  FLUTTER_VERSION: "3.47.7"
+
+jobs:
+  api:
+    name: API (lint, types, tests, audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: services/api/uv.lock
+      - name: Lint
+        run: make api-lint
+      - name: Type-check
+        run: make api-typecheck
+      - name: Tests with coverage gates
+        run: make api-test
+      - name: Dependency audit
+        run: make api-audit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-coverage
+          path: services/api/coverage.xml
+          if-no-files-found: ignore
+
+  contracts:
+    name: Contracts are current
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: services/api/uv.lock
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: make contracts-check
+
+  web:
+    name: Web portal (lint, types, tests, build, audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: make web-lint
+      - run: make web-typecheck
+      - run: make web-test
+      - run: make web-build
+      - run: make web-audit
+
+  mobile:
+    name: Android app (analyze, tests, release AAB)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: make mobile-lint
+      - run: make mobile-test
+      - name: Release App Bundle (prod flavor, debug-signed)
+        run: make mobile-build FLAVOR=prod
+      - name: Record bundle size
+        run: |
+          aab=$(ls apps/mobile/build/app/outputs/bundle/prodRelease/*.aab)
+          bytes=$(stat -c %s "$aab")
+          echo "Release AAB: $aab, $bytes bytes ($(numfmt --to=iec "$bytes"))" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-aab-prod
+          path: apps/mobile/build/app/outputs/bundle/prodRelease/*.aab
+      - name: Dependency report
+        run: make mobile-audit
+
+  images:
+    name: Docker images
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - run: make images
