@@ -253,6 +253,12 @@ lacks. Instead of installing it with `apt`, the API Dockerfile copies
 same Debian release. This keeps the build working where Debian mirrors are not
 reachable (as in the build sandbox) and keeps the runtime image slim.
 
+Update (Phase 5): the first full-stack run showed libmagic could not find its
+database, because it looks for `/usr/share/misc/magic.mgc` and the slim image
+lacks that symlink. Every PDF check failed in the worker. The image now
+creates the symlink and sets `MAGIC`, and `make images` runs a smoke check
+that sniffs a PDF inside the built worker image.
+
 ## D-034 · Node 24 and npm 11 for the web portal · 2026-10-09
 
 npm 10 crashes while resolving some peer dependencies of the test tooling.
@@ -363,3 +369,17 @@ problems. They now run at 392 × 851 dp, a common budget Android screen. The
 test font is wider than Roboto, so this also stands in for large system font
 sizes. Button rows that overflowed now wrap (`OverflowBar`), and drop-downs
 truncate long labels.
+
+## D-049 · A validation job that keeps failing rejects the upload · 2026-10-09
+
+If the worker cannot check a file (storage unreachable, a library error), the
+job retries with backoff (15 s, then doubling, five times). After the last
+attempt the upload is rejected with `SCAN_FAILED` ("The file could not be
+checked") and the customer is told, so they can upload again instead of
+waiting on a file that will never finish.
+
+## D-050 · Portal search covers every status · 2026-10-09
+
+The order list opens on the "To verify" tab. A search used to look only inside
+the open tab, so searching for an order that had moved on found nothing.
+Submitting a search now switches to "All".

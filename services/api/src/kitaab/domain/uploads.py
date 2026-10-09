@@ -219,3 +219,26 @@ def run_validation(services: Services, upload_id: str) -> UploadStatus | None:
             notifications.notify(ctx, upload.user_id, NotificationKind.UPLOAD_RESULT, title, body)
         session.commit()
         return upload.status
+
+
+def mark_check_failed(services: Services, upload_id: str) -> None:
+    """The validation job kept failing (for example storage was unreachable).
+    Reject the upload so the customer can try again instead of waiting."""
+    with services.session() as session:
+        ctx = Ctx(session, services)
+        upload = session.get(Upload, uuid.UUID(upload_id), with_for_update=True)
+        if upload is None or upload.status != UploadStatus.VALIDATING:
+            return
+        log.error("upload validation gave up", extra={"upload_id": upload_id})
+        if upload.object_key:
+            services.store.delete_all_versions(upload.object_key)
+        upload.object_key = None
+        upload.purged_at = ctx.now
+        upload.status = UploadStatus.REJECTED
+        upload.rejection_code = UploadRejection.SCAN_FAILED
+        upload.validated_at = ctx.now
+        if upload.user_id is not None:
+            notifications.notify(
+                ctx, upload.user_id, NotificationKind.UPLOAD_RESULT, *texts.upload_rejected()
+            )
+        session.commit()

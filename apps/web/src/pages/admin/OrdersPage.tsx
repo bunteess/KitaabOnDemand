@@ -19,6 +19,7 @@ const TABS: { label: string; type?: Schemas["OrderType"]; status: Status[] }[] =
   { label: "Out for delivery", status: ["DISPATCHED"] },
   { label: "All", status: [] },
 ];
+const ALL_TAB = TABS.length - 1;
 
 const columns: Column<Schemas["AdminOrderSummary"]>[] = [
   {
@@ -119,7 +120,8 @@ export function OrdersPage() {
         className="mb-4 grid gap-3 sm:grid-cols-[1fr_12rem_auto] sm:items-end"
         onSubmit={(e) => {
           e.preventDefault();
-          set({ q: search, page: null });
+          // A search looks through every status, not just the open tab.
+          set(search.trim() ? { q: search, page: null, tab: String(ALL_TAB) } : { q: null });
         }}
       >
         <TextInput

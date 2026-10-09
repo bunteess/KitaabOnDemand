@@ -216,3 +216,39 @@ def test_build_services_wires_the_configured_providers() -> None:
             assert session.is_active
     finally:
         clock_module.install(SystemClock())
+
+
+@pytest.mark.integration
+def test_validation_that_keeps_failing_rejects_the_upload(
+    api: "Api", monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from celery.exceptions import Retry
+
+    from kitaab.domain import uploads
+    from kitaab.workers import tasks
+    from support import pdf_bytes
+
+    customer = api.customer()
+    api.tasks.eager = False
+    upload = api.upload(customer, pdf_bytes(2))
+    assert upload["status"] == "VALIDATING"
+
+    def broken(services: object, upload_id: str) -> None:
+        raise RuntimeError("storage unreachable")
+
+    monkeypatch.setattr(uploads, "run_validation", broken)
+    monkeypatch.setattr(tasks, "services", lambda: api.services)
+    with pytest.raises(Retry):
+        tasks.validate_upload.apply(args=[upload["id"]], throw=True)
+    still = api.get(f"/api/v1/uploads/{upload['id']}", customer).json()
+    assert still["status"] == "VALIDATING"
+
+    # Last attempt: give up and tell the customer to try again.
+    monkeypatch.setattr(tasks, "VALIDATION_ATTEMPTS", 0)
+    with pytest.raises(RuntimeError):
+        tasks.validate_upload.apply(args=[upload["id"]], throw=True)
+    result = api.get(f"/api/v1/uploads/{upload['id']}", customer).json()
+    assert result["status"] == "REJECTED"
+    assert result["rejection_code"] == "SCAN_FAILED"
+    # Running it again on a finished upload changes nothing.
+    uploads.mark_check_failed(api.services, upload["id"])

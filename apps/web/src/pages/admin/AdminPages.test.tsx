@@ -162,3 +162,13 @@ test("sign out returns to the login page", async () => {
   await user.click(await screen.findByRole("button", { name: "Sign out" }));
   await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
 });
+
+test("orders: a search looks through every status", async () => {
+  const user = userEvent.setup();
+  const router = renderApp("/admin", { as: "ADMIN" });
+  expect(await screen.findByRole("tab", { name: "To verify", selected: true })).toBeInTheDocument();
+  await user.type(screen.getByLabelText("Search"), "KD");
+  await user.click(screen.getByRole("button", { name: "Search" }));
+  expect(await screen.findByRole("tab", { name: "All", selected: true })).toBeInTheDocument();
+  expect(router.state.location.search).toContain("q=KD");
+});

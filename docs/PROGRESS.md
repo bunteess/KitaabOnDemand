@@ -113,9 +113,24 @@ behind each choice.
   (`make mobile-integration`, job "Android emulator").
 - README: running the app on the emulator against the local stack.
 
+### Phase 5: Web portal (2026-10-09)
+
+- Playwright end-to-end tests against the full Docker stack with mock
+  providers (`make demo && make web-e2e`, CI job "End-to-end"). A customer
+  created through the API orders a print and requests a book. The admin signs
+  in with password and TOTP, reviews the file, opens the signed PDF link and
+  assigns the vendor. The vendor downloads the packing slip and prints. The
+  admin books the mock courier, and delivery arrives by signed webhook. The
+  COD remittance completes the order. The admin quotes the book request,
+  every admin page loads without errors, and the vendor is kept out of the
+  admin area.
+- Bugs found by the first full-stack run and fixed: libmagic could not find
+  its database in the image, so every upload stayed "checking" (D-033 update,
+  plus an image smoke check); a validation job that failed left the upload
+  waiting forever (D-049); portal search only looked in the open tab (D-050).
+
 ## Next
 
-- Phase 5: Web portal.
 - Phase 6: Hardening.
 - Phase 7: Release readiness.
 

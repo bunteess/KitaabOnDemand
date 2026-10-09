@@ -3,6 +3,7 @@
 from functools import lru_cache
 from typing import Any
 
+from celery import Task
 from celery.signals import worker_process_init
 
 from kitaab import jobs
@@ -22,9 +23,20 @@ def _init(**_: Any) -> None:
     configure_logging(get_settings().log_level)
 
 
-@app.task(name="validate_upload", autoretry_for=(OSError,), retry_backoff=True, max_retries=5)
-def validate_upload(upload_id: str) -> None:
-    jobs.validate_upload(services(), upload_id)
+VALIDATION_ATTEMPTS = 5
+
+
+@app.task(name="validate_upload", bind=True, max_retries=VALIDATION_ATTEMPTS)
+def validate_upload(self: "Task[Any, Any]", upload_id: str) -> None:
+    """Retries with backoff; if every attempt fails the upload is rejected as
+    "could not be checked" rather than left waiting forever."""
+    try:
+        jobs.validate_upload(services(), upload_id)
+    except Exception as error:
+        if self.request.retries >= VALIDATION_ATTEMPTS:
+            jobs.validation_failed(services(), upload_id)
+            raise
+        raise self.retry(exc=error, countdown=15 * 2**self.request.retries) from error
 
 
 @app.task(name="deliver_notification", autoretry_for=(OSError,), retry_backoff=True, max_retries=5)

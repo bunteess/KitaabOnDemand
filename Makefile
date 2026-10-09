@@ -144,6 +144,9 @@ web-build: web-install ## Production build of the web portal
 	cd $(WEB) && $(NPM) run build
 	@du -sh $(WEB)/dist | awk '{print "web dist size: " $$1}'
 
+web-e2e: web-install ## Portal end-to-end tests (Playwright) against a running stack (make demo)
+	cd $(WEB) && npx playwright test
+
 web-audit: web-install ## Audit npm dependencies
 	cd $(WEB) && $(NPM) audit --omit=dev --audit-level=high
 
@@ -186,8 +189,11 @@ mobile-audit: mobile-install ## Report outdated or discontinued Flutter dependen
 .PHONY: build images
 build: web-build mobile-build images ## Build every artifact
 
-images: ## Build the Docker images (api, worker, beat, web, minio)
+images: ## Build the Docker images (api, worker, beat, web, minio) and smoke-test them
 	$(COMPOSE) --profile app build
+	@# The worker must be able to sniff file types (libmagic and its database, D-033).
+	$(COMPOSE) --profile app run --rm --no-deps --entrypoint python worker -c \
+		"import magic; t = magic.from_buffer(b'%PDF-1.4\\n%%EOF\\n', mime=True); assert t == 'application/pdf', t; print('libmagic ok:', t)"
 
 # ---------------------------------------------------------------- end to end
 

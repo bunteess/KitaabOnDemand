@@ -26,6 +26,10 @@ def validate_upload(services: Services, upload_id: str) -> None:
     uploads.run_validation(services, upload_id)
 
 
+def validation_failed(services: Services, upload_id: str) -> None:
+    uploads.mark_check_failed(services, upload_id)
+
+
 def deliver_notification(services: Services, notification_id: str, send_sms: bool = False) -> None:
     notifications.deliver(services, notification_id, send_sms)
 
@@ -75,6 +79,7 @@ def deliver_webhook(services: Services, path: str, body: str, headers: dict[str,
 
 JOBS: dict[str, Callable[..., Any]] = {
     "validate_upload": validate_upload,
+    "validation_failed": validation_failed,
     "deliver_notification": deliver_notification,
     "process_refund": process_refund,
     "expire_quotes": expire_quotes,

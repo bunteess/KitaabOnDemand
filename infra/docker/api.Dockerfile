@@ -17,7 +17,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 COPY --from=libmagic /out/lib/ /usr/local/lib/
 COPY --from=libmagic /out/file/ /usr/lib/file/
-RUN ldconfig
+# libmagic looks for its database at /usr/share/misc/magic.mgc, a symlink the
+# slim image lacks; MAGIC makes the path explicit as well.
+ENV MAGIC=/usr/lib/file/magic.mgc
+RUN mkdir -p /usr/share/misc \
+ && ln -sf /usr/lib/file/magic.mgc /usr/share/misc/magic.mgc \
+ && ldconfig
 
 FROM base AS build
 ENV UV_COMPILE_BYTECODE=1 \

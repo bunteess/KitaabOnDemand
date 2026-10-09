@@ -139,6 +139,35 @@ jobs:
           disable-animations: true
           script: make mobile-integration
 
+  e2e:
+    name: End-to-end (full stack with mock providers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Start the stack with demo data
+        run: make demo
+      - name: Playwright browser
+        run: make web-install && cd apps/web && npx playwright install --with-deps chromium
+      - name: Portal flows (Playwright)
+        run: make web-e2e
+      - name: Stack logs
+        if: failure()
+        run: docker compose -f infra/docker-compose.yml --profile app logs --no-color > compose.log
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-failure
+          path: |
+            compose.log
+            apps/web/playwright-report
+            apps/web/test-results
+
   images:
     name: Docker images
     runs-on: ubuntu-latest
