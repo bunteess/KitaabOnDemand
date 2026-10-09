@@ -104,6 +104,20 @@ jobs:
           aab=$(ls apps/mobile/build/app/outputs/bundle/prodRelease/*.aab)
           bytes=$(stat -c %s "$aab")
           echo "Release AAB: $aab, $bytes bytes ($(numfmt --to=iec "$bytes"))" | tee -a "$GITHUB_STEP_SUMMARY"
+      # The bundle holds every CPU type; Google Play sends each phone only its
+      # own. This is what a customer actually downloads.
+      - name: Download size per device (bundletool)
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/bundletool.jar" \
+            https://github.com/google/bundletool/releases/download/1.18.1/bundletool-all-1.18.1.jar
+          aab=$(ls apps/mobile/build/app/outputs/bundle/prodRelease/*.aab)
+          java -jar "$RUNNER_TEMP/bundletool.jar" build-apks --bundle="$aab" --output="$RUNNER_TEMP/app.apks"
+          {
+            echo "Download size by CPU type, in bytes (min and max over screen densities and languages):"
+            echo '```'
+            java -jar "$RUNNER_TEMP/bundletool.jar" get-size total --apks="$RUNNER_TEMP/app.apks" --dimensions=ABI
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: android-aab-prod
