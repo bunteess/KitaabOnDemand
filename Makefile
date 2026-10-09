@@ -103,7 +103,7 @@ api-audit: api-install ## Audit Python dependencies for known vulnerabilities
 	cd $(API) && $(UV) run pip-audit --strict -r /tmp/kitaab-requirements.txt
 
 api-dev: deps-up ## Run the API on the host with auto-reload
-	cd $(API) && DEV_TOOLS_ENABLED=true $(UV) run uvicorn kitaab.main:app --reload --port 8000
+	cd $(API) && DEV_TOOLS_ENABLED=true $(UV) run uvicorn kitaab.main:create_production_app --factory --reload --port 8000
 
 # ---------------------------------------------------------------- contracts
 

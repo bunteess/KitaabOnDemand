@@ -42,9 +42,36 @@ behind each choice.
   screen in `screens.md`, a typed client with refresh, and an in-memory mock
   API. Tests: 51 (87% line coverage).
 
-## In progress
+### Phase 2: Backend core (2026-10-09)
 
-- Phase 2: Backend core.
+- Every contract endpoint implemented: phone OTP and Google sign-in, staff
+  login with lockout and mandatory admin TOTP, rotating refresh tokens with
+  reuse detection, profile, terms, addresses and devices.
+- Uploads: presigned multipart uploads to object storage with resume, size
+  enforced at four points, and a validation job (magic bytes, MIME sniff,
+  optional ClamAV, pikepdf open, encryption, page count, scripts and
+  attachments). Rejected files are deleted at once.
+- Orders: the state machine table with side effects, both order types, server
+  pricing with a price check against what the customer saw, COD limit, quotes
+  with expiry, the mock hosted checkout and signed idempotent webhooks,
+  refunds, dispatch through the mock courier or a typed CN, courier webhooks
+  and polling, and the customer timeline.
+- Admin and vendor APIs, packing slips (PDF), audit log, notifications (inbox,
+  push, optional SMS fallback), the append-only ledger with daily revenue,
+  COD reconciliation, vendor payouts and CSV exports.
+- Purge job (delivered and exited orders after seven days, abandoned uploads
+  after a day, deleted accounts' data once their orders finish), account
+  deletion, and the operations CLI.
+- Bugs found by the new tests and fixed: late gateway payments were ignored
+  (D-043), history order was ambiguous within one transaction (D-044), tokens
+  failed when the clock moved ahead (D-045), and chunked bodies over 1 MB got
+  a 500 instead of 413.
+- Tests: 326 backend tests against real Postgres, Redis and MinIO, with fakes
+  for SMS, push, payments and couriers and a frozen clock. They cover every
+  legal and illegal state transition, OTP, quotes, purge, ledger arithmetic,
+  PDF fixtures generated in code, webhook signatures and idempotency, an
+  authorisation matrix over every route and role, and Alembic upgrade,
+  downgrade and drift. Coverage: 96% overall, 94% on domain modules.
 
 ## Next
 

@@ -52,7 +52,7 @@ FROM runtime AS api
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --retries=10 \
   CMD python -c "import urllib.request,sys; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)" || exit 1
-CMD ["uvicorn", "kitaab.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*", "--no-server-header"]
+CMD ["uvicorn", "kitaab.main:create_production_app", "--host", "0.0.0.0", "--port", "8000", "--factory", "--proxy-headers", "--forwarded-allow-ips", "*", "--no-server-header"]
 
 FROM runtime AS worker
 CMD ["celery", "-A", "kitaab.workers.celery_app", "worker", "--loglevel=INFO", "--concurrency=2", "--without-gossip", "--without-mingle"]

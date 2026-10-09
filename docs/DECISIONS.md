@@ -150,9 +150,11 @@ Deleting an account at once removes the profile, phone, Google link,
 addresses, devices, notifications and every uploaded file not needed by an
 in-flight order. Orders that can still be cancelled are cancelled, with refund
 records created for paid ones. Orders past the cancellation point keep their
-shipping details and file until they reach a terminal state. The hourly purge
-job then removes the shipping details, and the file once its normal purge time
-comes. Financial records are kept but no longer linked to any personal data.
+shipping details and file only until they are delivered or reach a terminal
+state. The next hourly purge then removes the shipping details and the file
+together, without waiting the usual seven days, because the customer asked for
+their data to go. Financial records are kept but no longer linked to any
+personal data.
 
 ## D-020 · Review mode in production (conflict) · 2026-10-09
 
@@ -311,3 +313,26 @@ because Vite removes the dead branch.
 Riverpod 3 retries failing providers by default. Network retries are handled
 in one place each, `ApiClient` (safe requests) and `Uploader` (parts), so the
 app disables Riverpod's retry to avoid stacking retries on retries.
+
+## D-043 · Payments that arrive after we closed the attempt · 2026-10-09
+
+A customer can finish a gateway checkout after we stopped waiting for it: the
+order was cancelled, the payment window ran out, or they started a second
+checkout. Ignoring that payment would keep their money. Instead, if the order
+is still waiting for payment, the late payment places it (and any newer
+attempt is closed). If the order is closed or already paid, the payment is
+recorded and a refund is queued at once. An order is marked refunded only when
+no other paid payment remains on it.
+
+## D-044 · Status history keeps insertion order · 2026-10-09
+
+Several status changes can share one timestamp (delivered, then completed, in
+the same transaction). `order_status_history` has an identity column `seq`, and
+history and timelines are read in that order rather than by time alone.
+
+## D-045 · Token times follow the injected clock · 2026-10-09
+
+Access token expiry and issue time are checked against the application clock,
+not the machine clock, so tests and the development clock offset (used by the
+end-to-end run to move a week ahead) behave like real time passing. PyJWT
+still checks the signature, issuer and required claims.

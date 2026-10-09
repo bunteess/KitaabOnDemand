@@ -4904,6 +4904,13 @@
         "title": "VolumeBracket",
         "type": "object"
       }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "description": "Access token from /auth/otp/verify or /auth/staff/login",
+        "scheme": "bearer",
+        "type": "http"
+      }
     }
   },
   "info": {
@@ -5081,6 +5088,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Audit Logs",
         "tags": [
           "admin: configuration"
@@ -5183,6 +5195,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Cities",
         "tags": [
           "admin: configuration"
@@ -5289,6 +5306,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create City",
         "tags": [
           "admin: configuration"
@@ -5409,6 +5431,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Update City",
         "tags": [
           "admin: configuration"
@@ -5511,6 +5538,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Couriers",
         "tags": [
           "admin: orders"
@@ -5652,6 +5684,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Customers",
         "tags": [
           "admin: people"
@@ -5762,6 +5799,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Get Customer",
         "tags": [
           "admin: people"
@@ -5865,6 +5907,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Cod Pending",
         "tags": [
           "admin: finance"
@@ -5959,6 +6006,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Cod Pending Csv",
         "tags": [
           "admin: finance"
@@ -6068,6 +6120,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Record Cod Remittance",
         "tags": [
           "admin: finance"
@@ -6189,6 +6246,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Daily Revenue",
         "tags": [
           "admin: finance"
@@ -6305,6 +6367,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Daily Revenue Csv",
         "tags": [
           "admin: finance"
@@ -6437,6 +6504,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Payout Batches",
         "tags": [
           "admin: finance"
@@ -6544,6 +6616,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create Payout Batch",
         "tags": [
           "admin: finance"
@@ -6650,6 +6727,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Payout Batch Csv",
         "tags": [
           "admin: finance"
@@ -6770,6 +6852,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Mark Payout Paid",
         "tags": [
           "admin: finance"
@@ -6872,6 +6959,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Vendor Payouts",
         "tags": [
           "admin: finance"
@@ -6966,6 +7058,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Vendor Payouts Csv",
         "tags": [
           "admin: finance"
@@ -7177,6 +7274,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Orders",
         "tags": [
           "admin: orders"
@@ -7287,6 +7389,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Get Order",
         "tags": [
           "admin: orders"
@@ -7408,6 +7515,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Approve",
         "tags": [
           "admin: orders"
@@ -7528,6 +7640,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Cancel",
         "tags": [
           "admin: orders"
@@ -7649,6 +7766,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Dispatch",
         "tags": [
           "admin: orders"
@@ -7760,6 +7882,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin File Url",
         "tags": [
           "admin: orders"
@@ -7870,6 +7997,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Mark Delivered",
         "tags": [
           "admin: orders"
@@ -7990,6 +8122,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Mark Delivery Failed",
         "tags": [
           "admin: orders"
@@ -8110,6 +8247,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Mark Unavailable",
         "tags": [
           "admin: orders"
@@ -8216,6 +8358,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Packing Slip",
         "tags": [
           "admin: orders"
@@ -8337,6 +8484,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Send Quote",
         "tags": [
           "admin: orders"
@@ -8458,6 +8610,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Preview Quote",
         "tags": [
           "admin: orders"
@@ -8568,6 +8725,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Ready For Dispatch",
         "tags": [
           "admin: orders"
@@ -8689,6 +8851,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create Refund",
         "tags": [
           "admin: orders"
@@ -8810,6 +8977,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Reject",
         "tags": [
           "admin: orders"
@@ -8921,6 +9093,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Start Printing",
         "tags": [
           "admin: orders"
@@ -9042,6 +9219,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Start Sourcing",
         "tags": [
           "admin: orders"
@@ -9153,6 +9335,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Start Verification",
         "tags": [
           "admin: orders"
@@ -9256,6 +9443,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Pricing Configs",
         "tags": [
           "admin: configuration"
@@ -9363,6 +9555,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create Pricing Config",
         "tags": [
           "admin: configuration"
@@ -9502,6 +9699,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Refunds",
         "tags": [
           "admin: orders"
@@ -9622,6 +9824,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Mark Refund Processed",
         "tags": [
           "admin: orders"
@@ -9720,6 +9927,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Get Settings",
         "tags": [
           "admin: configuration"
@@ -9826,6 +10038,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Update Settings",
         "tags": [
           "admin: configuration"
@@ -9928,6 +10145,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Admins",
         "tags": [
           "admin: people"
@@ -10035,6 +10257,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create Admin",
         "tags": [
           "admin: people"
@@ -10156,6 +10383,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Update Staff User",
         "tags": [
           "admin: people"
@@ -10270,6 +10502,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Vendors",
         "tags": [
           "admin: people"
@@ -10376,6 +10613,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create Vendor",
         "tags": [
           "admin: people"
@@ -10496,6 +10738,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Update Vendor",
         "tags": [
           "admin: people"
@@ -10610,6 +10857,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin List Vendor Users",
         "tags": [
           "admin: people"
@@ -10728,6 +10980,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Admin Create Vendor User",
         "tags": [
           "admin: people"
@@ -11787,6 +12044,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Me",
         "tags": [
           "me"
@@ -11893,6 +12155,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Update Me",
         "tags": [
           "me"
@@ -11995,6 +12262,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Addresses",
         "tags": [
           "me"
@@ -12101,6 +12373,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Address",
         "tags": [
           "me"
@@ -12204,6 +12481,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Delete Address",
         "tags": [
           "me"
@@ -12322,6 +12604,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Update Address",
         "tags": [
           "me"
@@ -12431,6 +12718,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Delete Account",
         "tags": [
           "me"
@@ -12532,6 +12824,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Register Device",
         "tags": [
           "me"
@@ -12633,6 +12930,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Unregister Device",
         "tags": [
           "me"
@@ -12742,6 +13044,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Request Phone Link",
         "tags": [
           "me"
@@ -12850,6 +13157,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Verify Phone Link",
         "tags": [
           "me"
@@ -12959,6 +13271,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Accept Terms",
         "tags": [
           "me"
@@ -13082,6 +13399,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Notifications",
         "tags": [
           "notifications"
@@ -13173,6 +13495,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Mark All Notifications Read",
         "tags": [
           "notifications"
@@ -13276,6 +13603,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Mark Notification Read",
         "tags": [
           "notifications"
@@ -13414,6 +13746,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "List Orders",
         "tags": [
           "orders"
@@ -13523,6 +13860,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Print Order",
         "tags": [
           "orders"
@@ -13632,6 +13974,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Source Order",
         "tags": [
           "orders"
@@ -13742,6 +14089,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Order",
         "tags": [
           "orders"
@@ -13862,6 +14214,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Cancel Order",
         "tags": [
           "orders"
@@ -13973,6 +14330,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Retry Payment",
         "tags": [
           "orders"
@@ -14093,6 +14455,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Accept Quote",
         "tags": [
           "orders"
@@ -14203,6 +14570,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Decline Quote",
         "tags": [
           "orders"
@@ -14520,6 +14892,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Create Upload",
         "tags": [
           "uploads"
@@ -14623,6 +15000,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Abort Upload",
         "tags": [
           "uploads"
@@ -14732,6 +15114,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Upload",
         "tags": [
           "uploads"
@@ -14843,6 +15230,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Complete Upload",
         "tags": [
           "uploads"
@@ -14964,6 +15356,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Part Urls",
         "tags": [
           "uploads"
@@ -15107,6 +15504,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Vendor List Orders",
         "tags": [
           "vendor"
@@ -15217,6 +15619,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Vendor Get Order",
         "tags": [
           "vendor"
@@ -15328,6 +15735,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Vendor File Url",
         "tags": [
           "vendor"
@@ -15434,6 +15846,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Vendor Packing Slip",
         "tags": [
           "vendor"
@@ -15544,6 +15961,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Vendor Ready For Dispatch",
         "tags": [
           "vendor"
@@ -15654,6 +16076,11 @@
             "description": "Too many requests"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Vendor Start Printing",
         "tags": [
           "vendor"
@@ -15909,6 +16336,26 @@
           }
         },
         "summary": "Healthz",
+        "tags": [
+          "ops"
+        ]
+      }
+    },
+    "/readyz": {
+      "get": {
+        "description": "Readiness: the database and Redis answer.",
+        "operationId": "readyz",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Readyz",
         "tags": [
           "ops"
         ]
