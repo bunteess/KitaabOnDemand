@@ -56,6 +56,9 @@ where it goes. Items marked **before launch** block a production release.
 - [ ] **Domain and DNS**: a domain for the API and portal (for example
   `api.example.pk`, `portal.example.pk`) pointing to the server.
 - [ ] Optional: a Sentry project and DSN.
+- [ ] Once Firebase and the Google OAuth client exist, try push and Google
+  sign-in on a real device so their status in `docs/INTEGRATIONS.md` can move
+  from UNVERIFIED to Verified.
 
 ## Release steps only the owner can do
 

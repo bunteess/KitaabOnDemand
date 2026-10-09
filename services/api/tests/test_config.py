@@ -87,3 +87,31 @@ def test_comma_separated_lists_are_split(monkeypatch: pytest.MonkeyPatch) -> Non
     settings = Settings()
     assert settings.web_origins == ["https://a.example", "https://b.example"]
     assert settings.courier_providers == ["mock", "trax"]
+
+
+def test_env_example_lists_every_setting() -> None:
+    """services/api/.env.example documents every setting and nothing else."""
+    from pathlib import Path
+
+    example = Path(__file__).resolve().parents[1] / ".env.example"
+    keys = {
+        line.split("=", 1)[0].strip().lower()
+        for line in example.read_text().splitlines()
+        if "=" in line and not line.lstrip().startswith("#")
+    }
+    storage_credentials = {"aws_access_key_id", "aws_secret_access_key"}
+    assert keys - storage_credentials == set(Settings.model_fields)
+
+
+def test_env_example_values_are_valid_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    from pathlib import Path
+
+    example = Path(__file__).resolve().parents[1] / ".env.example"
+    for line in example.read_text().splitlines():
+        if "=" in line and not line.lstrip().startswith("#"):
+            key, value = line.split("=", 1)
+            monkeypatch.setenv(key.strip(), value.split(" #")[0].strip())
+    settings = Settings()
+    assert settings.environment == "development"
+    assert settings.s3_endpoint_url == "http://localhost:9000"
+    assert settings.web_origins == ["http://localhost:5173", "http://localhost:8080"]

@@ -102,8 +102,9 @@ api-audit: api-install ## Audit Python dependencies for known vulnerabilities
 	cd $(API) && $(UV) export --frozen --no-dev --no-hashes --no-emit-project > /tmp/kitaab-requirements.txt
 	cd $(API) && $(UV) run pip-audit --strict -r /tmp/kitaab-requirements.txt
 
-api-dev: deps-up ## Run the API on the host with auto-reload
-	cd $(API) && DEV_TOOLS_ENABLED=true $(UV) run uvicorn kitaab.main:create_production_app --factory --reload --port 8000
+api-dev: deps-up ## Run the API on the host with auto-reload (reads .env, else .env.example)
+	cd $(API) && $(UV) run --env-file $(if $(wildcard $(API)/.env),.env,.env.example) \
+		uvicorn kitaab.main:create_production_app --factory --reload --port 8000
 
 # ---------------------------------------------------------------- contracts
 

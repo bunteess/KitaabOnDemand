@@ -73,9 +73,25 @@ behind each choice.
   authorisation matrix over every route and role, and Alembic upgrade,
   downgrade and drift. Coverage: 96% overall, 94% on domain modules.
 
+### Phase 3: Integrations (2026-10-09)
+
+- `docs/INTEGRATIONS.md`: every provider's interface, status, mock behaviour,
+  settings and the steps to add a real adapter. Real gateways, couriers and
+  the SMS gateway stay skeletons that raise `NotConfigured` until the owner
+  places official documentation in `docs/integrations/<provider>/` (README
+  there). FCM and Google Sign-In are built on the official SDKs and marked
+  UNVERIFIED until tried with the owner's projects.
+- Mocks behave like real providers: hosted checkout page, consignment numbers,
+  tracking page, HMAC-signed webhooks through the job queue, configurable
+  failure rate and latency. Webhook signature checks and idempotency are
+  covered by the Phase 2 tests; courier polling is tested with a polling-only
+  courier.
+- `.env.example` files for the API (every setting, kept in sync by a test),
+  the compose stack and the portal. `make api-dev` reads `services/api/.env`,
+  or the example when there is none.
+
 ## Next
 
-- Phase 3: Integrations.
 - Phase 4: Android app.
 - Phase 5: Web portal.
 - Phase 6: Hardening.
