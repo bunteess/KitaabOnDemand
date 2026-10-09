@@ -180,3 +180,17 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: make images
+
+  infra:
+    name: Infrastructure (production compose, Terraform validate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.5"
+          terraform_wrapper: false
+      # Formatting and validation only. CI never plans against AWS or applies
+      # (docs/DEPLOY.md).
+      - run: make infra-check

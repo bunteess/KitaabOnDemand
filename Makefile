@@ -195,6 +195,26 @@ images: ## Build the Docker images (api, worker, beat, web, minio) and smoke-tes
 	$(COMPOSE) --profile app run --rm --no-deps --entrypoint python worker -c \
 		"import magic; t = magic.from_buffer(b'%PDF-1.4\\n%%EOF\\n', mime=True); assert t == 'application/pdf', t; print('libmagic ok:', t)"
 
+# ---------------------------------------------------------------- infrastructure
+
+TERRAFORM ?= terraform
+TF_INIT_FLAGS ?=            # e.g. -plugin-dir=/path where registry.terraform.io is blocked
+TF := infra/terraform
+PROD_COMPOSE := docker compose -f infra/docker-compose.prod.yml
+
+.PHONY: infra-check
+infra-check: ## Check production compose and Terraform (fmt, validate; never plan against AWS or apply)
+	VERSION=0.0.0 API_DOMAIN=api.example.pk PORTAL_DOMAIN=portal.example.pk ACME_EMAIL=ops@example.pk \
+		POSTGRES_PASSWORD=check $(PROD_COMPOSE) --env-file /dev/null config --quiet --no-env-resolution
+	@if command -v $(TERRAFORM) > /dev/null; then \
+		cd $(TF) && $(TERRAFORM) fmt -check -recursive && $(TERRAFORM) init -backend=false -input=false $(TF_INIT_FLAGS) > /dev/null \
+			&& $(TERRAFORM) validate; \
+	elif [ "$(STRICT)" = "1" ]; then \
+		echo "infra-check: terraform not found"; exit 1; \
+	else \
+		echo "infra-check: terraform SKIPPED, not installed (CI validates it)"; \
+	fi
+
 # ---------------------------------------------------------------- end to end
 
 .PHONY: e2e load

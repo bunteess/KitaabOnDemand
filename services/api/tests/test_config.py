@@ -115,3 +115,20 @@ def test_env_example_values_are_valid_settings(monkeypatch: pytest.MonkeyPatch) 
     assert settings.environment == "development"
     assert settings.s3_endpoint_url == "http://localhost:9000"
     assert settings.web_origins == ["http://localhost:5173", "http://localhost:8080"]
+
+
+def test_production_env_example_passes_the_safety_checks(monkeypatch: pytest.MonkeyPatch) -> None:
+    """infra/.env.production.example, with its blanks filled, starts in production."""
+    import secrets
+    from pathlib import Path
+
+    example = Path(__file__).resolve().parents[3] / "infra" / ".env.production.example"
+    for line in example.read_text().splitlines():
+        if "=" in line and not line.lstrip().startswith("#"):
+            key, value = line.split("=", 1)
+            monkeypatch.setenv(key.strip(), value.strip() or secrets.token_urlsafe(48))
+    settings = Settings()
+    assert settings.is_production
+    assert production_problems(settings) == []
+    assert settings.clamav_enabled
+    assert not settings.dev_tools_enabled

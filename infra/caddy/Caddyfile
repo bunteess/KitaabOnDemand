@@ -1,0 +1,26 @@
+# Edge proxy for production (infra/docker-compose.prod.yml). Caddy obtains and
+# renews TLS certificates for both names automatically. No access log: request
+# URLs can carry phone numbers (admin search), and the API logs paths itself.
+{
+	email {$ACME_EMAIL}
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+}
+
+# The app, payment and courier webhooks.
+{$API_DOMAIN} {
+	import common
+	reverse_proxy api:8000
+}
+
+# The admin and vendor portal (its container proxies /api to the API).
+{$PORTAL_DOMAIN} {
+	import common
+	reverse_proxy web:8080
+}

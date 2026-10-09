@@ -3,6 +3,11 @@
 {
 	admin off
 	auto_https off
+	# Keep the client address the edge proxy forwards, so per-address rate
+	# limits in the API see each staff member, not the proxy.
+	servers {
+		trusted_proxies static private_ranges
+	}
 }
 
 :8080 {

@@ -1,0 +1,4 @@
+# Copy to production.tfvars and fill in. Then: terraform plan -var-file=production.tfvars
+environment    = "production"
+bucket_name    = "kitaabondemand-uploads-prod"
+portal_origins = ["https://portal.example.pk"]
