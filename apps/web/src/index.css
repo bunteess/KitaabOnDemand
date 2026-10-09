@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/* Placeholder brand palette until the owner supplies one (OWNER_TODO.md). */
+@theme {
+  --color-brand-50: #eef7f4;
+  --color-brand-100: #d5ece4;
+  --color-brand-200: #a9d8c8;
+  --color-brand-600: #1c7a66;
+  --color-brand-700: #0f5c4d;
+  --color-brand-800: #0b463b;
+  --color-brand-900: #07302a;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}

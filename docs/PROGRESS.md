@@ -21,13 +21,33 @@ behind each choice.
 - `Makefile` with up, down, seed, lint, test, e2e, demo, verify.
 - GitHub Actions CI running the same targets.
 
+### Phase 1: Contracts and screens (2026-10-09)
+
+- `docs/design/screens.md`: every app and portal screen with its fields,
+  states, navigation map and the packing slip layout.
+- OpenAPI contract: 87 paths with final request and response models
+  (`packages/contracts/openapi.json`). Handlers return 501 until Phase 2
+  (D-038). The typed web client is generated from it, and the Dart client is
+  checked against it by test.
+- `packages/contracts/pricing_vectors.json`: 17 hand-worked pricing cases, 9
+  money-format cases and 11 phone cases. Python and Dart run them all and
+  agree.
+- Pricing engine in Python and Dart, phone normalisation and money formatting.
+- Android app (Flutter): theme, 275 English strings in ARB with an Urdu stub,
+  router with session redirects and deep-link paths, and every screen in
+  `screens.md`. Also a typed API client with token refresh, a resumable
+  multipart uploader and an in-memory fake API. Tests: 82 (vectors, contract,
+  routing, OTP sign-in smoke flows).
+- Web portal: Tailwind theme, role-gated admin and vendor areas with every
+  screen in `screens.md`, a typed client with refresh, and an in-memory mock
+  API. Tests: 51 (87% line coverage).
+
 ## In progress
 
-- Phase 1: Contracts and screens.
+- Phase 2: Backend core.
 
 ## Next
 
-- Phase 2: Backend core.
 - Phase 3: Integrations.
 - Phase 4: Android app.
 - Phase 5: Web portal.

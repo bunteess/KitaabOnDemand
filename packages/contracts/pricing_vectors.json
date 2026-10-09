@@ -1,0 +1,594 @@
+{
+  "description": "Shared pricing and formatting cases. Both the Python and Dart calculators must match exactly. All amounts are paisa.",
+  "configs": {
+    "standard": {
+      "version": 7,
+      "rules": {
+        "papers": {
+          "LOCAL_WHITE": {
+            "rate_per_page_paisa": 235,
+            "brackets": [
+              {
+                "min_printed_pages": 3000,
+                "rate_per_page_paisa": 190
+              },
+              {
+                "min_printed_pages": 1000,
+                "rate_per_page_paisa": 210
+              }
+            ]
+          },
+          "IMPORTED_YELLOW": {
+            "rate_per_page_paisa": 300,
+            "brackets": []
+          }
+        },
+        "bindings": {
+          "SOFTCOVER_PAPERBACK": {
+            "fee_paisa": 15000,
+            "max_pages": 800
+          },
+          "PREMIUM_HARDCOVER": {
+            "fee_paisa": 45050,
+            "max_pages": 1200
+          }
+        },
+        "delivery_fees_paisa": {
+          "Z1": 20000,
+          "Z2": 25000,
+          "Z3": 32500
+        },
+        "cod_fee_paisa": 5000,
+        "max_copies": 20
+      }
+    },
+    "placeholder": {
+      "version": 1,
+      "rules": {
+        "papers": {
+          "LOCAL_WHITE": {
+            "rate_per_page_paisa": 200,
+            "brackets": [
+              {
+                "min_printed_pages": 2000,
+                "rate_per_page_paisa": 180
+              }
+            ]
+          },
+          "IMPORTED_YELLOW": {
+            "rate_per_page_paisa": 275,
+            "brackets": [
+              {
+                "min_printed_pages": 2000,
+                "rate_per_page_paisa": 250
+              }
+            ]
+          }
+        },
+        "bindings": {
+          "SOFTCOVER_PAPERBACK": {
+            "fee_paisa": 15000,
+            "max_pages": 800
+          },
+          "PREMIUM_HARDCOVER": {
+            "fee_paisa": 50000,
+            "max_pages": 1200
+          }
+        },
+        "delivery_fees_paisa": {
+          "Z1": 20000,
+          "Z2": 25000,
+          "Z3": 35000
+        },
+        "cod_fee_paisa": 5000,
+        "max_copies": 50
+      }
+    }
+  },
+  "cases": [
+    {
+      "name": "single softcover, whole-rupee subtotal, COD",
+      "config": "standard",
+      "input": {
+        "pages": 100,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": "COD",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 100,
+        "rate_per_page_paisa": 235,
+        "printing_paisa": 23500,
+        "binding_paisa": 15000,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 38500,
+        "rounding_paisa": 0,
+        "calculated_goods_paisa": 38500,
+        "goods_override": false,
+        "goods_paisa": 38500,
+        "delivery_zone": "Z1",
+        "delivery_paisa": 20000,
+        "cod_fee_paisa": 5000,
+        "total_paisa": 63500
+      }
+    },
+    {
+      "name": "odd page count rounds up to the next rupee",
+      "config": "standard",
+      "input": {
+        "pages": 101,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z2",
+        "payment_method": "EASYPAISA",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 101,
+        "rate_per_page_paisa": 235,
+        "printing_paisa": 23735,
+        "binding_paisa": 15000,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 38735,
+        "rounding_paisa": 65,
+        "calculated_goods_paisa": 38800,
+        "goods_override": false,
+        "goods_paisa": 38800,
+        "delivery_zone": "Z2",
+        "delivery_paisa": 25000,
+        "cod_fee_paisa": 0,
+        "total_paisa": 63800
+      }
+    },
+    {
+      "name": "three hardcover copies reach the 1000-page bracket",
+      "config": "standard",
+      "input": {
+        "pages": 400,
+        "paper": "LOCAL_WHITE",
+        "binding": "PREMIUM_HARDCOVER",
+        "copies": 3,
+        "zone": "Z3",
+        "payment_method": "COD",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 1200,
+        "rate_per_page_paisa": 210,
+        "printing_paisa": 252000,
+        "binding_paisa": 135150,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 387150,
+        "rounding_paisa": 50,
+        "calculated_goods_paisa": 387200,
+        "goods_override": false,
+        "goods_paisa": 387200,
+        "delivery_zone": "Z3",
+        "delivery_paisa": 32500,
+        "cod_fee_paisa": 5000,
+        "total_paisa": 424700
+      }
+    },
+    {
+      "name": "exactly 1000 printed pages uses the bracket",
+      "config": "standard",
+      "input": {
+        "pages": 500,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 2,
+        "zone": "Z1",
+        "payment_method": "CARD",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 1000,
+        "rate_per_page_paisa": 210,
+        "printing_paisa": 210000,
+        "binding_paisa": 30000,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 240000,
+        "rounding_paisa": 0,
+        "calculated_goods_paisa": 240000,
+        "goods_override": false,
+        "goods_paisa": 240000,
+        "delivery_zone": "Z1",
+        "delivery_paisa": 20000,
+        "cod_fee_paisa": 0,
+        "total_paisa": 260000
+      }
+    },
+    {
+      "name": "999 printed pages stays on the base rate",
+      "config": "standard",
+      "input": {
+        "pages": 999,
+        "paper": "LOCAL_WHITE",
+        "binding": "PREMIUM_HARDCOVER",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": "JAZZCASH",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 999,
+        "rate_per_page_paisa": 235,
+        "printing_paisa": 234765,
+        "binding_paisa": 45050,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 279815,
+        "rounding_paisa": 85,
+        "calculated_goods_paisa": 279900,
+        "goods_override": false,
+        "goods_paisa": 279900,
+        "delivery_zone": "Z1",
+        "delivery_paisa": 20000,
+        "cod_fee_paisa": 0,
+        "total_paisa": 299900
+      }
+    },
+    {
+      "name": "3000 printed pages uses the highest bracket",
+      "config": "standard",
+      "input": {
+        "pages": 1000,
+        "paper": "LOCAL_WHITE",
+        "binding": "PREMIUM_HARDCOVER",
+        "copies": 3,
+        "zone": "Z2",
+        "payment_method": "COD",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 3000,
+        "rate_per_page_paisa": 190,
+        "printing_paisa": 570000,
+        "binding_paisa": 135150,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 705150,
+        "rounding_paisa": 50,
+        "calculated_goods_paisa": 705200,
+        "goods_override": false,
+        "goods_paisa": 705200,
+        "delivery_zone": "Z2",
+        "delivery_paisa": 25000,
+        "cod_fee_paisa": 5000,
+        "total_paisa": 735200
+      }
+    },
+    {
+      "name": "paper without brackets, payment not chosen yet",
+      "config": "standard",
+      "input": {
+        "pages": 250,
+        "paper": "IMPORTED_YELLOW",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 4,
+        "zone": "Z1",
+        "payment_method": null,
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 1000,
+        "rate_per_page_paisa": 300,
+        "printing_paisa": 300000,
+        "binding_paisa": 60000,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 360000,
+        "rounding_paisa": 0,
+        "calculated_goods_paisa": 360000,
+        "goods_override": false,
+        "goods_paisa": 360000,
+        "delivery_zone": "Z1",
+        "delivery_paisa": 20000,
+        "cod_fee_paisa": 0,
+        "total_paisa": 380000
+      }
+    },
+    {
+      "name": "SOURCE quote adds sourcing cost before rounding",
+      "config": "standard",
+      "input": {
+        "pages": 320,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z3",
+        "payment_method": "COD",
+        "sourcing_cost_paisa": 120050,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 320,
+        "rate_per_page_paisa": 235,
+        "printing_paisa": 75200,
+        "binding_paisa": 15000,
+        "sourcing_cost_paisa": 120050,
+        "goods_before_rounding_paisa": 210250,
+        "rounding_paisa": 50,
+        "calculated_goods_paisa": 210300,
+        "goods_override": false,
+        "goods_paisa": 210300,
+        "delivery_zone": "Z3",
+        "delivery_paisa": 32500,
+        "cod_fee_paisa": 5000,
+        "total_paisa": 247800
+      }
+    },
+    {
+      "name": "SOURCE quote with an admin override of the goods price",
+      "config": "standard",
+      "input": {
+        "pages": 320,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": "EASYPAISA",
+        "sourcing_cost_paisa": 120050,
+        "goods_override_paisa": 200000
+      },
+      "expected": {
+        "printed_pages": 320,
+        "rate_per_page_paisa": 235,
+        "printing_paisa": 75200,
+        "binding_paisa": 15000,
+        "sourcing_cost_paisa": 120050,
+        "goods_before_rounding_paisa": 210250,
+        "rounding_paisa": 50,
+        "calculated_goods_paisa": 210300,
+        "goods_override": true,
+        "goods_paisa": 200000,
+        "delivery_zone": "Z1",
+        "delivery_paisa": 20000,
+        "cod_fee_paisa": 0,
+        "total_paisa": 220000
+      }
+    },
+    {
+      "name": "maximum pages for softcover",
+      "config": "standard",
+      "input": {
+        "pages": 800,
+        "paper": "IMPORTED_YELLOW",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z2",
+        "payment_method": "COD",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 800,
+        "rate_per_page_paisa": 300,
+        "printing_paisa": 240000,
+        "binding_paisa": 15000,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 255000,
+        "rounding_paisa": 0,
+        "calculated_goods_paisa": 255000,
+        "goods_override": false,
+        "goods_paisa": 255000,
+        "delivery_zone": "Z2",
+        "delivery_paisa": 25000,
+        "cod_fee_paisa": 5000,
+        "total_paisa": 285000
+      }
+    },
+    {
+      "name": "seeded placeholder config",
+      "config": "placeholder",
+      "input": {
+        "pages": 300,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": "COD",
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected": {
+        "printed_pages": 300,
+        "rate_per_page_paisa": 200,
+        "printing_paisa": 60000,
+        "binding_paisa": 15000,
+        "sourcing_cost_paisa": 0,
+        "goods_before_rounding_paisa": 75000,
+        "rounding_paisa": 0,
+        "calculated_goods_paisa": 75000,
+        "goods_override": false,
+        "goods_paisa": 75000,
+        "delivery_zone": "Z1",
+        "delivery_paisa": 20000,
+        "cod_fee_paisa": 5000,
+        "total_paisa": 100000
+      }
+    },
+    {
+      "name": "one page over the softcover maximum",
+      "config": "standard",
+      "input": {
+        "pages": 801,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": null,
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected_error": "PAGES_EXCEED_BINDING_MAX"
+    },
+    {
+      "name": "zero pages",
+      "config": "standard",
+      "input": {
+        "pages": 0,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": null,
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected_error": "INVALID_PAGES"
+    },
+    {
+      "name": "zero copies",
+      "config": "standard",
+      "input": {
+        "pages": 10,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 0,
+        "zone": "Z1",
+        "payment_method": null,
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected_error": "INVALID_COPIES"
+    },
+    {
+      "name": "more copies than allowed",
+      "config": "standard",
+      "input": {
+        "pages": 10,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 21,
+        "zone": "Z1",
+        "payment_method": null,
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected_error": "INVALID_COPIES"
+    },
+    {
+      "name": "city zone without a delivery fee",
+      "config": "standard",
+      "input": {
+        "pages": 10,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z9",
+        "payment_method": null,
+        "sourcing_cost_paisa": 0,
+        "goods_override_paisa": null
+      },
+      "expected_error": "UNKNOWN_ZONE"
+    },
+    {
+      "name": "negative sourcing cost",
+      "config": "standard",
+      "input": {
+        "pages": 10,
+        "paper": "LOCAL_WHITE",
+        "binding": "SOFTCOVER_PAPERBACK",
+        "copies": 1,
+        "zone": "Z1",
+        "payment_method": null,
+        "sourcing_cost_paisa": -1,
+        "goods_override_paisa": null
+      },
+      "expected_error": "INVALID_SOURCING_COST"
+    }
+  ],
+  "format_cases": [
+    {
+      "paisa": 0,
+      "text": "Rs. 0"
+    },
+    {
+      "paisa": 5,
+      "text": "Rs. 0.05"
+    },
+    {
+      "paisa": 100,
+      "text": "Rs. 1"
+    },
+    {
+      "paisa": 99900,
+      "text": "Rs. 999"
+    },
+    {
+      "paisa": 125000,
+      "text": "Rs. 1,250"
+    },
+    {
+      "paisa": 125050,
+      "text": "Rs. 1,250.50"
+    },
+    {
+      "paisa": 100000000,
+      "text": "Rs. 1,000,000"
+    },
+    {
+      "paisa": 123456789,
+      "text": "Rs. 1,234,567.89"
+    },
+    {
+      "paisa": -5000,
+      "text": "-Rs. 50"
+    }
+  ],
+  "phone_cases": [
+    {
+      "input": "03001234567",
+      "e164": "+923001234567"
+    },
+    {
+      "input": "0300-1234567",
+      "e164": "+923001234567"
+    },
+    {
+      "input": "3001234567",
+      "e164": "+923001234567"
+    },
+    {
+      "input": "+92 300 1234567",
+      "e164": "+923001234567"
+    },
+    {
+      "input": "923211234567",
+      "e164": "+923211234567"
+    },
+    {
+      "input": "00923451234567",
+      "e164": "+923451234567"
+    },
+    {
+      "input": "(0333) 123-4567",
+      "e164": "+923331234567"
+    },
+    {
+      "input": "0211234567",
+      "e164": null
+    },
+    {
+      "input": "030012345",
+      "e164": null
+    },
+    {
+      "input": "+12025550123",
+      "e164": null
+    },
+    {
+      "input": "",
+      "e164": null
+    }
+  ]
+}

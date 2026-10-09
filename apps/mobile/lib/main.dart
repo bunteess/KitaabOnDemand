@@ -1,17 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_ui/material_ui.dart';
 
-void main() {
-  runApp(const KitaabApp());
-}
+import 'app/app.dart';
+import 'app/config.dart';
+import 'app/providers.dart';
 
-class KitaabApp extends StatelessWidget {
-  const KitaabApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'KitaabOnDemand',
-      home: Scaffold(body: Center(child: Text('KitaabOnDemand'))),
-    );
-  }
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final config = AppConfig.fromEnvironment();
+  runApp(
+    ProviderScope(
+      // Network retries are handled by ApiClient and Uploader, not by Riverpod.
+      retry: (_, _) => null,
+      overrides: [appConfigProvider.overrideWithValue(config)],
+      child: const KitaabApp(),
+    ),
+  );
 }

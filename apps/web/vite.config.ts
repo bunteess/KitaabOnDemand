@@ -23,7 +23,13 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.test.{ts,tsx}", "src/test/**", "src/api/schema.d.ts", "src/main.tsx"],
+      exclude: [
+        "src/**/*.test.{ts,tsx}",
+        "src/test/**",
+        "src/api/schema.d.ts",
+        "src/api/mock.ts",
+        "src/main.tsx",
+      ],
       thresholds: { lines: 75, statements: 75 },
     },
   },

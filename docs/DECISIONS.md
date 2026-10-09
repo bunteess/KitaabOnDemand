@@ -262,3 +262,52 @@ npm 11, bundled with Node 24 LTS, does not. The web Dockerfile and CI use Node
 TypeScript 7 (the native compiler) is current, but `typescript-eslint` supports
 only versions below 6.1 and `openapi-typescript` requires 5.x. The portal uses
 TypeScript 5.9 until the tooling catches up.
+
+## D-036 · The app uses the `material_ui` package · 2026-10-09
+
+Flutter 3.47 is moving Material out of the SDK into the `material_ui`
+package, and go_router 18 already depends on it. The app imports
+`package:material_ui/material_ui.dart` everywhere and supplies `material_ui`'s
+localization delegates itself, so one Material implementation is in use.
+`flutter_localizations` stays only because the generated `AppLocalizations`
+imports it.
+
+## D-037 · httpx2 for outgoing HTTP and the test client · 2026-10-09
+
+Starlette now deprecates `httpx` for its test client in favour of `httpx2`
+(maintained by the Pydantic team). The backend uses `httpx2` for both, so there
+is one HTTP client library.
+
+## D-038 · Contract first, implementation second · 2026-10-09
+
+In Phase 1 every route exists with its final request and response models and
+returns `501 not-implemented`. That fixed the OpenAPI contract, the typed web
+client and the Dart client before any business logic was written. Phase 2
+fills in the handlers without changing paths or schemas.
+
+## D-039 · One active upload per device · 2026-10-09
+
+The app keeps a single pending upload job on disk. It covers the real use
+(one PDF per order) and keeps resume logic simple. Picking a new file
+discards the unfinished one, and the server purges abandoned uploads after 24
+hours.
+
+## D-040 · No image cache package yet · 2026-10-09
+
+The brief asks for image caching. The MVP shows no remote images (no book
+covers or thumbnails), so no caching package is added. Add
+`cached_network_image` when remote images appear.
+
+## D-041 · Mock API modes for the clients · 2026-10-09
+
+The app built with `MOCK_API=true` and the portal built with
+`VITE_MOCK_API=true` run against in-memory fakes of the API. These are the
+clickable stubs from Phase 1, and they back the widget, component and
+integration tests. The production portal bundle does not include the mock,
+because Vite removes the dead branch.
+
+## D-042 · Riverpod's automatic retry is off · 2026-10-09
+
+Riverpod 3 retries failing providers by default. Network retries are handled
+in one place each, `ApiClient` (safe requests) and `Uploader` (parts), so the
+app disables Riverpod's retry to avoid stacking retries on retries.

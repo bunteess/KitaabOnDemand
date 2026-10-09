@@ -1,0 +1,467 @@
+{
+  "@@locale": "en",
+  "appTitle": "KitaabOnDemand",
+  "retry": "Try again",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "continueLabel": "Continue",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "close": "Close",
+  "ok": "OK",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorOffline": "You are offline. Check your connection and try again.",
+  "errorTimeout": "This is taking too long. Check your connection and try again.",
+  "errorSessionExpired": "Please sign in again.",
+  "errorRateLimited": "Too many attempts. Please wait a few minutes and try again.",
+  "offlineBanner": "You are offline",
+  "optional": "Optional",
+  "fieldRequired": "This field is required",
+  "onboardingTitle1": "Find any book",
+  "onboardingBody1": "Tell us the book you need. We find it and send you a price.",
+  "onboardingTitle2": "Print your PDF",
+  "onboardingBody2": "Upload a PDF, choose paper and binding, and we print it.",
+  "onboardingTitle3": "Delivered to your door",
+  "onboardingBody3": "Pay cash on delivery or online, and track every step.",
+  "onboardingSkip": "Skip",
+  "onboardingNext": "Next",
+  "onboardingStart": "Get started",
+  "loginTitle": "Sign in",
+  "loginPhoneLabel": "Mobile number",
+  "loginPhoneHint": "0300 1234567",
+  "loginSendCode": "Send code",
+  "loginWithGoogle": "Continue with Google",
+  "loginOr": "or",
+  "loginTermsNotice": "By continuing you agree to our Terms of Service and Privacy Policy.",
+  "phoneInvalid": "Enter a Pakistani mobile number, for example 0300 1234567",
+  "otpTitle": "Enter the code",
+  "otpSentTo": "We sent a 6-digit code to {phone}",
+  "@otpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "otpCodeLabel": "6-digit code",
+  "otpResendIn": "Send a new code in {seconds}s",
+  "@otpResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpResend": "Send a new code",
+  "otpChangeNumber": "Change number",
+  "otpVerify": "Verify",
+  "otpWrong": "Wrong code. {attempts} attempts left.",
+  "@otpWrong": {
+    "placeholders": {
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "otpWrongNoCount": "Wrong code. Please check and try again.",
+  "otpExpired": "This code has expired. Send a new one.",
+  "otpTooMany": "Too many attempts. Send a new code later.",
+  "googleSignInFailed": "Google sign-in did not finish. Try again or use your mobile number.",
+  "googleNotConfigured": "Google sign-in is not available in this build.",
+  "termsTitle": "Before you start",
+  "termsSummary": "Please read and accept our Terms of Service and Privacy Policy. They explain how we handle your orders, files and personal details.",
+  "termsAgree": "I agree to the Terms of Service and Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "addPhoneTitle": "Add your mobile number",
+  "addPhoneBody": "We need a verified mobile number before your first order, for delivery updates and the courier.",
+  "phoneInUse": "This number is already used by another account. Contact support for help.",
+  "navHome": "Home",
+  "navOrders": "Orders",
+  "navInbox": "Inbox",
+  "navProfile": "Profile",
+  "homeGreeting": "Hello, {name}",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreetingNoName": "Hello",
+  "homeFindBookTitle": "Find a book",
+  "homeFindBookBody": "We find it and send you a price",
+  "homePrintTitle": "Print my PDF",
+  "homePrintBody": "Upload a file, we print and bind it",
+  "homeCalculator": "Price calculator",
+  "homeLatestOrder": "Your latest order",
+  "homeSeeAll": "See all orders",
+  "notificationsTooltip": "Notifications",
+  "requestTitle": "Find a book",
+  "fieldBookTitle": "Book title",
+  "fieldAuthor": "Author",
+  "fieldIsbn": "ISBN",
+  "fieldEdition": "Edition",
+  "fieldNotes": "Anything else we should know",
+  "fieldCopies": "Copies",
+  "fieldPreferredPaper": "Preferred paper",
+  "fieldPreferredBinding": "Preferred binding",
+  "noPreference": "No preference",
+  "fieldDeliveryAddress": "Delivery address",
+  "addAddress": "Add address",
+  "changeAddress": "Change",
+  "requestSubmit": "Send request",
+  "requestSubmitted": "We are looking for your book. We will send you a price soon.",
+  "copiesRange": "Choose between 1 and {max} copies",
+  "@copiesRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "paperLocalWhite": "Local White",
+  "paperImportedYellow": "Imported Yellow",
+  "bindingSoftcover": "Softcover Paperback",
+  "bindingHardcover": "Premium Hardcover",
+  "fieldPaper": "Paper",
+  "fieldBinding": "Binding",
+  "fieldPages": "Number of pages",
+  "fieldCity": "Delivery city",
+  "printTitle": "Print my PDF",
+  "printIntro": "Choose a PDF up to 150 MB. We check every file before printing.",
+  "printPickFile": "Choose PDF",
+  "printChangeFile": "Choose another file",
+  "printPagesFound": "{pages} pages",
+  "@printPagesFound": {
+    "placeholders": {
+      "pages": {
+        "type": "int"
+      }
+    }
+  },
+  "printPagesManual": "We could not read the page count. Enter it below and we will check it after upload.",
+  "printCopyright": "I own this file or have permission to print it.",
+  "printTooLarge": "This file is larger than 150 MB. Please choose a smaller file.",
+  "printNotPdf": "Please choose a PDF file.",
+  "printPickFailed": "The file could not be opened. Please try another file.",
+  "pagesInvalid": "Enter the number of pages",
+  "optionsTitle": "Print options",
+  "uploadAndContinue": "Upload and continue",
+  "pagesExceedBinding": "This binding allows up to {max} pages. Please choose another binding.",
+  "@pagesExceedBinding": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "cityNotServed": "We do not deliver to this city yet.",
+  "priceUnavailable": "Prices could not be loaded.",
+  "priceTitle": "Price",
+  "pricePrinting": "Printing ({pages} pages × {copies})",
+  "@pricePrinting": {
+    "placeholders": {
+      "pages": {
+        "type": "int"
+      },
+      "copies": {
+        "type": "int"
+      }
+    }
+  },
+  "priceBinding": "Binding × {copies}",
+  "@priceBinding": {
+    "placeholders": {
+      "copies": {
+        "type": "int"
+      }
+    }
+  },
+  "priceSourcing": "Finding the book",
+  "priceRounding": "Rounding",
+  "priceDelivery": "Delivery",
+  "priceCodFee": "Cash on delivery fee",
+  "priceTotal": "Total",
+  "priceGoods": "Book and printing",
+  "uploadTitle": "Uploading your file",
+  "uploadProgress": "{sent} of {total}",
+  "@uploadProgress": {
+    "placeholders": {
+      "sent": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadPaused": "Paused",
+  "uploadWaitingNetwork": "Waiting for connection. Your upload will continue.",
+  "uploadChecking": "Checking your file…",
+  "uploadReady": "Your file is ready",
+  "uploadPause": "Pause",
+  "uploadResume": "Resume",
+  "uploadStarting": "Preparing upload…",
+  "uploadRejectedTitle": "We cannot print this file",
+  "rejectCorrupt": "The file is damaged or is not a real PDF.",
+  "rejectEncrypted": "The file is password-protected. Remove the password and try again.",
+  "rejectNoPages": "The file has no pages.",
+  "rejectActiveContent": "The file contains scripts or attachments, which we cannot accept.",
+  "rejectTooLarge": "The file is larger than 150 MB.",
+  "rejectMalware": "The file failed our safety check.",
+  "rejectGeneric": "The file could not be checked. Please try again.",
+  "pageMismatchTitle": "Page count updated",
+  "pageMismatchBody": "Your file has {pages} pages, not {localPages}. The new total is {price}.",
+  "@pageMismatchBody": {
+    "placeholders": {
+      "pages": {
+        "type": "int"
+      },
+      "localPages": {
+        "type": "int"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "leaveUploadTitle": "Leave this screen?",
+  "leaveUploadBody": "Your upload will keep going and you can come back to it.",
+  "leave": "Leave",
+  "stay": "Stay",
+  "resumeUploadBanner": "You have an unfinished upload: {file}",
+  "@resumeUploadBanner": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "resumeUploadAction": "Continue",
+  "checkoutTitle": "Checkout",
+  "orderSummary": "Order summary",
+  "paymentMethodTitle": "Payment method",
+  "payCod": "Cash on delivery",
+  "payEasypaisa": "Easypaisa",
+  "payJazzcash": "JazzCash",
+  "payCard": "Debit or credit card",
+  "codNotAllowed": "Cash on delivery is not available for orders above {amount}.",
+  "@codNotAllowed": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "placeOrder": "Place order",
+  "priceChangedTitle": "Price updated",
+  "priceChangedBody": "The total is now {price}. Do you want to continue?",
+  "@priceChangedBody": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "noAddressYet": "Add a delivery address to continue.",
+  "paymentChecking": "Checking your payment…",
+  "paymentSuccess": "Payment received",
+  "paymentFailed": "The payment did not go through.",
+  "paymentChooseOther": "Choose another method",
+  "payNow": "Pay now",
+  "awaitingPayment": "Awaiting payment",
+  "openPaymentPage": "Open payment page",
+  "paymentPageNotOpened": "The payment page could not be opened.",
+  "calculatorTitle": "Price calculator",
+  "calculatorHint": "Prices are estimates. We confirm the page count when you upload your file.",
+  "ordersTitle": "My orders",
+  "ordersActive": "Active",
+  "ordersPast": "Past",
+  "ordersEmpty": "No orders yet",
+  "ordersEmptyBody": "Find a book or print your PDF to get started.",
+  "orderCode": "Order {code}",
+  "@orderCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "needsAction": "Action needed",
+  "loadMore": "Load more",
+  "statusPendingPayment": "Awaiting payment",
+  "statusPlaced": "Placed",
+  "statusVerifying": "Being checked",
+  "statusAssigned": "Sent to printer",
+  "statusInPrint": "Printing",
+  "statusReadyForDispatch": "Ready to ship",
+  "statusDispatched": "Out for delivery",
+  "statusDelivered": "Delivered",
+  "statusCompleted": "Completed",
+  "statusRejected": "Not accepted",
+  "statusCancelled": "Cancelled",
+  "statusDeliveryFailed": "Delivery failed",
+  "statusRequested": "Looking for book",
+  "statusQuoted": "Quote ready",
+  "statusAccepted": "Quote accepted",
+  "statusSourcing": "Getting your book",
+  "statusQuoteExpired": "Quote expired",
+  "statusDeclined": "Declined",
+  "statusUnavailable": "Not available",
+  "stepPlaced": "Order placed",
+  "stepVerifying": "Verifying",
+  "stepSourcing": "Sourcing",
+  "stepPrinting": "Printing",
+  "stepOutForDelivery": "Out for delivery",
+  "stepCompleted": "Completed",
+  "exitRejected": "Your file was not accepted",
+  "exitCancelled": "This order was cancelled",
+  "exitQuoteExpired": "This quote has expired",
+  "exitDeclined": "You declined this quote",
+  "exitUnavailable": "We could not find this book",
+  "exitDeliveryFailed": "The delivery did not succeed",
+  "exitReason": "Reason: {reason}",
+  "@exitReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "requestAgain": "Request again",
+  "orderDetailTitle": "Order details",
+  "quoteTitle": "Your quote",
+  "quoteValidUntil": "Valid until {time}",
+  "@quoteValidUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "quoteFor": "{pages} pages, {paper}, {binding}, {copies} copies",
+  "@quoteFor": {
+    "placeholders": {
+      "pages": {
+        "type": "int"
+      },
+      "paper": {
+        "type": "String"
+      },
+      "binding": {
+        "type": "String"
+      },
+      "copies": {
+        "type": "int"
+      }
+    }
+  },
+  "quoteTotalDigital": "Pay online: {amount}",
+  "@quoteTotalDigital": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "quoteTotalCod": "Cash on delivery: {amount}",
+  "@quoteTotalCod": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "quoteAccept": "Accept and order",
+  "quoteDecline": "Decline",
+  "quoteDeclineConfirm": "Decline this quote?",
+  "quoteChoosePayment": "How would you like to pay?",
+  "trackingTitle": "Tracking",
+  "trackingCourier": "Courier",
+  "trackingCn": "Tracking number",
+  "trackingOpen": "Track parcel",
+  "deliveryAddressTitle": "Delivery address",
+  "landmarkPrefix": "Near: {landmark}",
+  "@landmarkPrefix": {
+    "placeholders": {
+      "landmark": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentTitle": "Payment",
+  "paymentPending": "Pending",
+  "paymentPaid": "Paid",
+  "paymentFailedStatus": "Failed",
+  "paymentRefunded": "Refunded",
+  "cancelOrder": "Cancel order",
+  "cancelOrderConfirm": "Cancel this order? This cannot be undone.",
+  "fileTitle": "File",
+  "bookSection": "Book",
+  "optionsSection": "Options",
+  "byAuthor": "by {author}",
+  "@byAuthor": {
+    "placeholders": {
+      "author": {
+        "type": "String"
+      }
+    }
+  },
+  "inboxTitle": "Notifications",
+  "inboxEmpty": "No notifications yet",
+  "markAllRead": "Mark all read",
+  "profileTitle": "Profile",
+  "profileName": "Name",
+  "profilePhone": "Mobile number",
+  "profileAddresses": "Addresses",
+  "profileSupport": "Help and support",
+  "profileDelete": "Delete account",
+  "signOut": "Sign out",
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "editName": "Edit name",
+  "noName": "Add your name",
+  "signOutConfirm": "Sign out of KitaabOnDemand?",
+  "addressesTitle": "Addresses",
+  "addressesEmpty": "Add an address to place orders.",
+  "addressFormNew": "New address",
+  "addressFormEdit": "Edit address",
+  "fieldRecipientName": "Recipient name",
+  "fieldRecipientPhone": "Recipient mobile number",
+  "fieldArea": "Area or neighbourhood",
+  "fieldStreet": "House, street and block",
+  "fieldLandmark": "Nearest landmark",
+  "landmarkHint": "For example: near Jamia Masjid",
+  "fieldLabel": "Label, such as Home or Office",
+  "fieldDefault": "Use as my default address",
+  "deleteAddressConfirm": "Delete this address?",
+  "defaultBadge": "Default",
+  "chooseCity": "Choose a city",
+  "supportTitle": "Help and support",
+  "supportCall": "Call us",
+  "supportWhatsapp": "WhatsApp",
+  "supportEmail": "Email",
+  "supportHours": "Hours: {hours}",
+  "@supportHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "supportOpenFailed": "Could not open this app.",
+  "deleteTitle": "Delete account",
+  "deleteBody": "This removes your profile, mobile number, addresses, notifications and uploaded files straight away. Payment records are kept without your personal details, as the law requires.",
+  "deleteInProgressNote": "Orders that can still be cancelled will be cancelled. Orders already printing or on the way will be delivered first, and their delivery details are removed afterwards.",
+  "deleteTypeToConfirm": "Type DELETE to confirm",
+  "deleteButton": "Delete my account",
+  "deleteDone": "Your account has been deleted."
+}

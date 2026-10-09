@@ -19,7 +19,8 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      // Fast-refresh hints only matter for hot reload; they are noise for shared modules.
+      "react-refresh/only-export-components": "off",
     },
   },
 );
