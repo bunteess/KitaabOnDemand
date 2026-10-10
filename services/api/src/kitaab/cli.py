@@ -4,6 +4,8 @@ kitaab migrate [--init-storage]        run migrations (one-shot deploy step)
 kitaab seed [--demo]                   cities, placeholder pricing, settings (--demo: logins)
 kitaab create-admin EMAIL NAME         new admin; prints a temporary password and TOTP setup
 kitaab create-vendor-user VENDOR EMAIL NAME
+kitaab reset-staff-login EMAIL         new temporary password (and TOTP for admins)
+kitaab rotate-encryption-key           re-encrypt TOTP secrets; old key in OLD_DATA_ENCRYPTION_KEY
 kitaab purge [--dry-run]               run the storage purge now
 """
 
@@ -193,6 +195,55 @@ def cmd_create_admin(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_reset_staff_login(args: argparse.Namespace) -> int:
+    from kitaab.domain import audit, auth
+    from kitaab.problems import ProblemError
+
+    ctx = _ctx()
+    with ctx.session:
+        try:
+            new = auth.reset_staff_login(ctx, args.email)
+        except ProblemError:
+            out("No admin or vendor login with that email.")
+            return 1
+        audit.record(ctx, "staff.login_reset", "user", new.user.id, via="cli")
+        ctx.session.commit()
+        out(f"Reset {new.user.role.value.lower()} {new.user.email}; every session signed out.")
+        out(f"Temporary password: {new.temporary_password}")
+        if new.totp_uri:
+            out(f"TOTP secret: {new.totp_secret}")
+            out(f"Authenticator link: {new.totp_uri}")
+        if not new.user.is_active:
+            out("This login is disabled. Enable it in the portal (Staff) if it should work.")
+        out("Share these over a secure channel. They are not shown again.")
+    return 0
+
+
+def cmd_rotate_encryption_key(args: argparse.Namespace) -> int:
+    import os
+
+    from kitaab.domain import audit, auth
+
+    old_key = os.environ.get("OLD_DATA_ENCRYPTION_KEY", "")
+    if not old_key:
+        out("Set OLD_DATA_ENCRYPTION_KEY to the previous key (docs/RUNBOOK.md).")
+        return 1
+    if old_key == get_settings().data_encryption_key.get_secret_value():
+        out("OLD_DATA_ENCRYPTION_KEY equals DATA_ENCRYPTION_KEY. Set the new key first.")
+        return 1
+    ctx = _ctx()
+    with ctx.session:
+        try:
+            rotated, current = auth.reencrypt_totp_secrets(ctx, old_key)
+        except ValueError as error:
+            out(f"{error}. Nothing was changed.")
+            return 1
+        audit.record(ctx, "settings.encryption_key_rotated", "settings", None, rotated=rotated)
+        ctx.session.commit()
+    out(f"Re-encrypted {rotated} authenticator secrets; {current} already used the new key.")
+    return 0
+
+
 def cmd_create_vendor_user(args: argparse.Namespace) -> int:
     from kitaab.domain import auth
     from kitaab.domain.enums import Role
@@ -251,6 +302,18 @@ def build_parser() -> argparse.ArgumentParser:
     vendor.add_argument("email")
     vendor.add_argument("name")
     vendor.set_defaults(func=cmd_create_vendor_user)
+
+    reset = sub.add_parser(
+        "reset-staff-login", help="New temporary password (and TOTP for admins) for a staff login"
+    )
+    reset.add_argument("email")
+    reset.set_defaults(func=cmd_reset_staff_login)
+
+    rotate = sub.add_parser(
+        "rotate-encryption-key",
+        help="Re-encrypt TOTP secrets with the current key (old one in OLD_DATA_ENCRYPTION_KEY)",
+    )
+    rotate.set_defaults(func=cmd_rotate_encryption_key)
 
     purge = sub.add_parser("purge", help="Run the storage purge now")
     purge.add_argument("--dry-run", action="store_true")

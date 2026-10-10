@@ -410,3 +410,17 @@ endpoints were async (to read the signed body), so their database work ran on
 the event loop, and a busy pool would have frozen the whole process for up to
 the 10-second pool timeout. They now read the body in an async dependency, and
 a test fails if any endpoint is async (2026-10-10).
+
+## D-052 · Staff login recovery and key rotation are CLI commands · 2026-10-10
+
+The runbook needs two recoveries the portal cannot do. An admin who loses
+their phone or password could only be fixed in SQL, and rotating
+`DATA_ENCRYPTION_KEY` made every admin's authenticator secret unreadable, so
+no admin could sign in. Two operations commands, like `purge`, cover them:
+`kitaab reset-staff-login EMAIL` issues a new temporary password (and a new
+authenticator secret for an admin), clears any lockout and signs out every
+session; `kitaab rotate-encryption-key` re-encrypts every authenticator secret
+from `OLD_DATA_ENCRYPTION_KEY` to the current key, is safe to run twice, and
+changes nothing if a secret opens with neither key. Both are audited. Staff
+still cannot change their own password in the portal; that is proposed, not
+built.

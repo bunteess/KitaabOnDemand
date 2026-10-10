@@ -112,6 +112,38 @@ def test_create_staff_commands(
 
 
 @pytest.mark.integration
+def test_staff_recovery_commands(
+    db: object, clock: object, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    assert cli.main(["create-admin", "boss@example.com", "Boss"]) == 0
+    capsys.readouterr()
+    assert cli.main(["reset-staff-login", "boss@example.com"]) == 0
+    out = capsys.readouterr().out
+    assert "every session signed out" in out
+    assert "Temporary password:" in out
+    assert "otpauth://totp/" in out
+    assert cli.main(["reset-staff-login", "nobody@example.com"]) == 1
+
+    from pydantic import SecretStr
+
+    from kitaab.config import get_settings
+
+    monkeypatch.delenv("OLD_DATA_ENCRYPTION_KEY", raising=False)
+    assert cli.main(["rotate-encryption-key"]) == 1
+    settings = get_settings()
+    old_key = settings.data_encryption_key.get_secret_value()
+    monkeypatch.setenv("OLD_DATA_ENCRYPTION_KEY", old_key)
+    assert cli.main(["rotate-encryption-key"]) == 1
+    assert "Set the new key first" in capsys.readouterr().out
+    monkeypatch.setattr(settings, "data_encryption_key", SecretStr("rotated-key-" + "z" * 32))
+    assert cli.main(["rotate-encryption-key"]) == 0
+    assert "Re-encrypted 1 authenticator secrets" in capsys.readouterr().out
+    # Running it again finds every secret already on the current key.
+    assert cli.main(["rotate-encryption-key"]) == 0
+    assert "0 authenticator secrets; 1 already" in capsys.readouterr().out
+
+
+@pytest.mark.integration
 def test_purge_command(db: object, clock: object, capsys: pytest.CaptureFixture[str]) -> None:
     assert cli.main(["purge", "--dry-run"]) == 0
     assert "dry_run=True" in capsys.readouterr().out

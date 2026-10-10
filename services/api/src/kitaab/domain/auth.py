@@ -21,7 +21,7 @@ from kitaab.domain.context import Ctx
 from kitaab.domain.enums import Role
 from kitaab.models import OtpChallenge, RefreshToken, User
 from kitaab.phone import InvalidPhoneError, mask_phone, normalize_pk_mobile
-from kitaab.problems import ProblemError, conflict, invalid
+from kitaab.problems import ProblemError, conflict, invalid, not_found
 from kitaab.providers.errors import ProviderError
 from kitaab.providers.id_tokens import InvalidIdToken
 from kitaab.security import passwords, totp
@@ -452,3 +452,57 @@ def create_staff(
     return NewStaff(
         user, temporary, totp.provisioning_uri(secret, email) if secret else None, secret
     )
+
+
+def reset_staff_login(ctx: Ctx, email: str) -> NewStaff:
+    """A new temporary password, and for an admin a new authenticator secret, for
+    a staff member who lost theirs (docs/RUNBOOK.md). Clears any lockout and
+    signs out every session. A disabled account stays disabled."""
+    user = ctx.session.scalar(
+        select(User)
+        .where(func.lower(User.email) == email.lower(), User.role.in_((Role.ADMIN, Role.VENDOR)))
+        .with_for_update()
+    )
+    if user is None:
+        raise not_found("Staff member")
+    temporary = passwords.temporary_password()
+    user.password_hash = passwords.hash_password(temporary)
+    secret = totp.new_secret() if user.role == Role.ADMIN else None
+    if secret:
+        key = ctx.services.settings.data_encryption_key.get_secret_value()
+        user.totp_secret_enc = totp.encrypt(secret, key)
+    user.failed_login_count = 0
+    user.locked_until = None
+    user.updated_at = ctx.now
+    revoke_all(ctx, user)
+    return NewStaff(
+        user,
+        temporary,
+        totp.provisioning_uri(secret, user.email or email) if secret else None,
+        secret,
+    )
+
+
+def reencrypt_totp_secrets(ctx: Ctx, old_key: str) -> tuple[int, int]:
+    """Re-encrypt every authenticator secret from old_key to the current
+    DATA_ENCRYPTION_KEY. Returns (re-encrypted, already on the current key).
+    Safe to run twice. Refuses, changing nothing, if a secret opens with
+    neither key."""
+    new_key = ctx.services.settings.data_encryption_key.get_secret_value()
+    users = ctx.session.scalars(
+        select(User).where(User.totp_secret_enc.is_not(None)).with_for_update()
+    ).all()
+    rotated = current = 0
+    for user in users:
+        sealed = user.totp_secret_enc or ""
+        secret = totp.decrypt(sealed, old_key)
+        if secret is None:
+            if totp.decrypt(sealed, new_key) is None:
+                ctx.session.rollback()
+                raise ValueError(f"The authenticator secret of {user.email} opens with neither key")
+            current += 1
+            continue
+        user.totp_secret_enc = totp.encrypt(secret, new_key)
+        user.updated_at = ctx.now
+        rotated += 1
+    return rotated, current

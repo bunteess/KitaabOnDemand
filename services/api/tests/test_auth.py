@@ -3,10 +3,13 @@
 from datetime import timedelta
 
 import pytest
+from pydantic import SecretStr
 from sqlalchemy import select
 
+from kitaab.domain import auth
 from kitaab.domain.enums import Role
 from kitaab.models import OtpChallenge, RefreshToken, User
+from kitaab.problems import ProblemError
 from kitaab.security import totp
 from support import ADMIN_PASSWORD, ADMIN_TOTP, Api
 
@@ -347,3 +350,63 @@ def test_create_staff_refuses_duplicate_email(api: Api) -> None:
     assert error.value.code == "email-in-use"
     with pytest.raises(ValueError):
         auth.create_staff(ctx, email="c@example.com", full_name="C", role=Role.CUSTOMER)
+
+
+def test_reset_staff_login_issues_new_credentials(api: Api) -> None:
+    admin = api.admin()
+    for _ in range(api.services.settings.staff_max_failed_logins):
+        api.staff_login("admin@example.com", "wrong", None)
+    ctx = api.ctx()
+    with ctx.session:
+        new = auth.reset_staff_login(ctx, "ADMIN@example.com")
+        ctx.session.commit()
+    assert new.totp_secret is not None
+    assert new.totp_secret != ADMIN_TOTP
+    assert new.totp_uri is not None
+    assert new.totp_uri.startswith("otpauth://totp/")
+    now = api.clock.now()
+    old_code = totp.code_at(ADMIN_TOTP, now)
+    assert api.staff_login("admin@example.com", ADMIN_PASSWORD, old_code).status_code == 401
+    assert api.staff_login("admin@example.com", new.temporary_password, old_code).status_code == 401
+    new_code = totp.code_at(new.totp_secret, now)
+    # The lockout is cleared and the new password and authenticator work.
+    good = api.staff_login("admin@example.com", new.temporary_password, new_code)
+    assert good.status_code == 200
+    # Every earlier session was signed out.
+    stale = api.post("/api/v1/auth/refresh", json={"refresh_token": admin.refresh})
+    assert stale.status_code == 401
+
+    vendor = api.vendor_user(api.vendor())
+    with ctx.session:
+        user = ctx.session.get(User, vendor.id)
+        assert user is not None
+        assert user.email is not None
+        reset = auth.reset_staff_login(ctx, user.email)
+        assert reset.totp_secret is None
+        with pytest.raises(ProblemError):
+            auth.reset_staff_login(ctx, "nobody@example.com")
+
+
+def test_reencrypt_totp_secrets_moves_to_the_new_key(
+    api: Api, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    api.admin()
+    settings = api.services.settings
+    old_key = settings.data_encryption_key.get_secret_value()
+    monkeypatch.setattr(settings, "data_encryption_key", SecretStr("a-brand-new-key-" + "x" * 32))
+    code = totp.code_at(ADMIN_TOTP, api.clock.now())
+    # With only the new key configured, the old secret cannot be read.
+    assert api.staff_login("admin@example.com", ADMIN_PASSWORD, code).status_code == 403
+    ctx = api.ctx()
+    with ctx.session:
+        assert auth.reencrypt_totp_secrets(ctx, old_key) == (1, 0)
+        ctx.session.commit()
+    assert api.staff_login("admin@example.com", ADMIN_PASSWORD, code).status_code == 200
+    with ctx.session:
+        assert auth.reencrypt_totp_secrets(ctx, old_key) == (0, 1)
+    # A wrong old key and a wrong new key: refuse, and change nothing.
+    monkeypatch.setattr(settings, "data_encryption_key", SecretStr("a-third-key-" + "y" * 32))
+    with ctx.session, pytest.raises(ValueError, match="neither key"):
+        auth.reencrypt_totp_secrets(ctx, "some-unrelated-key")
+    monkeypatch.setattr(settings, "data_encryption_key", SecretStr("a-brand-new-key-" + "x" * 32))
+    assert api.staff_login("admin@example.com", ADMIN_PASSWORD, code).status_code == 200
