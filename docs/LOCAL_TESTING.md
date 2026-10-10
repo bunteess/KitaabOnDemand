@@ -9,6 +9,13 @@ services and let you read what they would have sent.
 Allow about an hour the first time: most of it is installing tools and the
 first build.
 
+Steps 3, 4, 5, 7 and 8 were run as written from a fresh copy of the project
+zip on Linux (10 October 2026). The Windows and macOS notes follow each tool's
+standard setup but were not tried on those systems. Step 6 (the app against
+your laptop's platform) needs an Android emulator, which the test machine did
+not have. In CI the app's flows run on an emulator against the app's built-in
+fake API, and the platform's side of the same flows runs in step 4's tests.
+
 ## 1. What you need
 
 | Tool | Needed for | How to get it |
@@ -156,9 +163,11 @@ in at once.
    your consignment number:
 
    ```bash
-   curl -X POST http://localhost:8000/api/v1/_dev/mock-courier/MOCK-123456/events \
+   curl -s -X POST http://localhost:8000/api/v1/_dev/mock-courier/MOCK-123456/events \
      -H 'Content-Type: application/json' -d '{"state":"DELIVERED"}'
    ```
+
+   It answers `{"status":"sent"}`.
 
    Other states you can send first: `PICKED_UP`, `IN_TRANSIT`,
    `OUT_FOR_DELIVERY`. You can also send `FAILED` instead of `DELIVERED`.
@@ -218,25 +227,31 @@ try to open http://localhost:8080/admin; it should refuse.
 To click through the screens without any server, run the app with mock data:
 `flutter run --flavor dev --dart-define-from-file=config/dev.json --dart-define=MOCK_API=true`.
 
-The same customer flows run automatically on an emulator with
-`make mobile-integration`.
+The app's customer flows also run automatically on an emulator with
+`make mobile-integration`, against the app's built-in fake API.
 
 ## 7. Time-based features
 
 Quotes expire, unpaid payments expire, and files are purged 7 days after
 delivery. Rather than wait, move the platform's clock forward, then run the
-job now instead of on its schedule:
+job now instead of on its schedule. Deliver an order first (step 5).
 
 ```bash
 # 8 days ahead
-curl -X POST http://localhost:8000/api/v1/_dev/clock -H 'Content-Type: application/json' \
+curl -s -X POST http://localhost:8000/api/v1/_dev/clock -H 'Content-Type: application/json' \
   -d '{"offset_seconds": 691200}'
 # run the purge (also: expire_quotes, expire_pending_payments, poll_courier_status)
-curl -X POST http://localhost:8000/api/v1/_dev/jobs/purge_files
+curl -s -X POST http://localhost:8000/api/v1/_dev/jobs/purge_files
 # back to the real time
-curl -X POST http://localhost:8000/api/v1/_dev/clock -H 'Content-Type: application/json' \
+curl -s -X POST http://localhost:8000/api/v1/_dev/clock -H 'Content-Type: application/json' \
   -d '{"offset_seconds": 0}'
 ```
+
+The purge answers with what it did, for example `"delivered_files": 1`.
+
+While the clock is moved, **new admin sign-ins fail**: the platform checks
+authenticator codes against its own clock. Sign in before moving it, or put
+it back first.
 
 After the purge, a delivered order's file is gone from the MinIO console, but
 the order and its history remain. The **Audit log** shows a `purge.run`
@@ -279,6 +294,6 @@ CI. `docs/DEPLOY.md` has the first-start checks for the real server.
 | A service keeps restarting | `docker compose -f infra/docker-compose.yml --profile app logs api` (or `worker`, `web`) shows why. Also check Docker has 6 GB of memory |
 | `make: command not found` on macOS, or odd errors | Use `gmake` from `brew install make` |
 | `bad interpreter` or `\r` errors on Windows | The files got Windows line endings. Unzip again, or clone with `git config --global core.autocrlf false` |
-| Admin sign-in says the code is wrong | Codes change every 30 seconds; print a fresh one. Check your laptop's clock is correct |
+| Admin sign-in says the code is wrong | Codes change every 30 seconds; print a fresh one. Check your laptop's clock is correct, and that the platform's clock is not moved (step 7) |
 | Sign-in is refused as too many attempts | The platform limits sign-ins per address (30 SMS codes an hour, 30 staff attempts per 15 minutes), and repeated test runs reach that. Wait, or clear the limits by emptying Redis (it also forgets queued jobs and the SMS outbox): `docker compose -f infra/docker-compose.yml exec redis redis-cli FLUSHALL` |
 | The app cannot reach the API | Check step 6.2 was done before `make up`, and that http://localhost:8000/readyz works on the laptop |
