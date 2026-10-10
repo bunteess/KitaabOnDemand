@@ -1,0 +1,10 @@
+# LF line endings on every platform. Shell scripts, Caddyfiles and Dockerfiles
+# are read inside Linux containers, where Windows (CRLF) line endings break
+# them, even when the repository is cloned on Windows.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jar binary
+*.pdf binary
+*.aab binary

@@ -218,9 +218,12 @@ infra-check: ## Check production compose and Terraform (fmt, validate; never pla
 
 # ---------------------------------------------------------------- end to end
 
-.PHONY: e2e load
+.PHONY: e2e load sample-orders
 e2e: ## Start the full stack with mock providers and run the end-to-end scenarios
 	./tests/e2e/run.sh
+
+sample-orders: api-install ## Place a print order and a book request to work through by hand (stack running)
+	cd $(API) && $(UV) run python ../../tests/e2e/sample_orders.py
 
 load: ## Run the Locust load test against a running stack (see docs/PERF.md)
 	./tests/load/run.sh

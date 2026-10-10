@@ -35,6 +35,7 @@ make api-dev     # API on the host with auto-reload
 make test        # all unit and integration tests
 make verify      # lint, type checks, tests, contract checks and builds (what CI runs)
 make e2e         # full-stack end-to-end scenarios with mock providers
+make sample-orders  # fresh orders to work through by hand in the portal
 ```
 
 Run the Android app against the local API on the emulator. The phone reaches
@@ -64,6 +65,7 @@ Wi-Fi, use the computer's LAN address in `infra/.env` and in
 - [Integrations](docs/INTEGRATIONS.md): provider adapters and their verification status
 - [Screens](docs/design/screens.md): screen inventory and navigation for designers
 - [Security](docs/SECURITY.md): sign-in, authorisation matrix, files, money, log review, audits
+- [Testing on your laptop](docs/LOCAL_TESTING.md): step by step, before deploying
 - [Performance](docs/PERF.md), [Deploy](docs/DEPLOY.md), [Runbook](docs/RUNBOOK.md), [Mobile release](docs/RELEASE_MOBILE.md)
 
 ## Ground rules
