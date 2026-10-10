@@ -15,15 +15,24 @@ log = logging.getLogger(__name__)
 BAD_SIGNATURE = ProblemError(401, "invalid-signature", "Signature check failed")
 
 
+async def raw_body(request: Request) -> bytes:
+    """The exact bytes the provider signed. Reading them is the only async step,
+    so the endpoints stay sync and their database work runs on a request thread,
+    never on the event loop (D-051)."""
+    return await request.body()
+
+
 @router.post("/payments/{provider}")
-async def payment_webhook(
-    provider: str, request: Request, ctx: Ctx = Depends(public_ctx)
+def payment_webhook(
+    provider: str,
+    request: Request,
+    body: bytes = Depends(raw_body),
+    ctx: Ctx = Depends(public_ctx),
 ) -> dict[str, str]:
     """Signed payment notifications. Idempotent: repeats return 200 and change nothing."""
     gateway = ctx.services.payments.get(provider)
     if gateway is None:
         raise not_found("Payment provider")
-    body = await request.body()
     try:
         event = gateway.parse_webhook(dict(request.headers), body)
     except InvalidSignature as error:
@@ -37,14 +46,16 @@ async def payment_webhook(
 
 
 @router.post("/couriers/{provider}")
-async def courier_webhook(
-    provider: str, request: Request, ctx: Ctx = Depends(public_ctx)
+def courier_webhook(
+    provider: str,
+    request: Request,
+    body: bytes = Depends(raw_body),
+    ctx: Ctx = Depends(public_ctx),
 ) -> dict[str, str]:
     """Signed courier status updates. Idempotent."""
     courier = ctx.services.couriers.get(provider)
     if courier is None or not courier.supports_webhooks:
         raise not_found("Courier")
-    body = await request.body()
     try:
         events = courier.parse_webhook(dict(request.headers), body)
     except InvalidSignature as error:

@@ -1,6 +1,7 @@
 """Cross-cutting plumbing: problem responses, middleware, logging, the clock
 and the application factory."""
 
+import inspect
 import json
 import logging
 from collections.abc import Iterator
@@ -9,6 +10,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 import redis
 from fastapi import APIRouter
+from fastapi.routing import APIRoute, iter_route_contexts
 from fastapi.testclient import TestClient
 
 from kitaab import clock as clock_module
@@ -296,3 +298,17 @@ def test_database_overload_returns_503(api: Api, error: str) -> None:
     assert response.status_code == 503
     assert response.json()["code"] == "service-busy"
     assert response.headers["Retry-After"] == "5"
+
+
+def test_no_endpoint_runs_on_the_event_loop() -> None:
+    """Endpoints do blocking database work, so each must be a plain function
+    that runs on a request thread. An async one would stall every request in
+    its process while it waits for a connection (D-051)."""
+    app = create_app(settings=Settings(dev_tools_enabled=True))
+    async_endpoints = [
+        context.path
+        for context in iter_route_contexts(app.routes)
+        if isinstance(context.original_route, APIRoute)
+        and inspect.iscoroutinefunction(context.original_route.endpoint)
+    ]
+    assert async_endpoints == []

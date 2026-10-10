@@ -403,3 +403,10 @@ endpoint runs, and every endpoint closes its session as its last step
 request middlewares are plain ASGI. When the database is overloaded or
 unreachable the API answers `503 service-busy` with `Retry-After`.
 docs/PERF.md has the numbers before and after.
+
+The opposite rule holds for endpoints: they do blocking database work, so all
+of them are plain functions that run on request threads. The two webhook
+endpoints were async (to read the signed body), so their database work ran on
+the event loop, and a busy pool would have frozen the whole process for up to
+the 10-second pool timeout. They now read the body in an async dependency, and
+a test fails if any endpoint is async (2026-10-10).
