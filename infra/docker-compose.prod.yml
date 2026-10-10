@@ -9,7 +9,8 @@
 
 x-api: &api
   image: ${IMAGE_PREFIX:-ghcr.io/bunteess/kitaabondemand}-api:${VERSION:?set VERSION}
-  env_file: .env.production
+  # PROD_ENV_FILE lets `make infra-check` validate against the example file.
+  env_file: ${PROD_ENV_FILE:-.env.production}
   restart: unless-stopped
   networks: [internal]
   volumes:

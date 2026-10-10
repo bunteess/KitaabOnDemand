@@ -205,7 +205,8 @@ PROD_COMPOSE := docker compose -f infra/docker-compose.prod.yml
 .PHONY: infra-check
 infra-check: ## Check production compose and Terraform (fmt, validate; never plan against AWS or apply)
 	VERSION=0.0.0 API_DOMAIN=api.example.pk PORTAL_DOMAIN=portal.example.pk ACME_EMAIL=ops@example.pk \
-		POSTGRES_PASSWORD=check $(PROD_COMPOSE) --env-file /dev/null config --quiet --no-env-resolution
+		POSTGRES_PASSWORD=check PROD_ENV_FILE=.env.production.example \
+		$(PROD_COMPOSE) --env-file /dev/null config --quiet
 	@if command -v $(TERRAFORM) > /dev/null; then \
 		cd $(TF) && $(TERRAFORM) fmt -check -recursive && $(TERRAFORM) init -backend=false -input=false $(TF_INIT_FLAGS) > /dev/null \
 			&& $(TERRAFORM) validate; \
