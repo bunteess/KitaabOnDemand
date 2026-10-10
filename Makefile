@@ -75,7 +75,7 @@ typecheck: api-typecheck web-typecheck ## Type-check every project (Dart is chec
 
 test: api-test web-test mobile-test ## Run every unit and integration test suite
 
-verify: lint typecheck contracts-check test build ## Everything CI runs: lint, types, tests, builds
+verify: lint typecheck contracts-check test build infra-check ## Everything CI runs: lint, types, tests, builds, infra checks
 	@echo "verify: all checks passed"
 
 # ---------------------------------------------------------------- api

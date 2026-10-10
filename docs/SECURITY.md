@@ -12,6 +12,11 @@ review checked. Re-run the checks before each release (`docs/RUNBOOK.md`).
 | Admins | Email, password and TOTP | Argon2 password hashes, TOTP mandatory, TOTP secrets encrypted at rest (`DATA_ENCRYPTION_KEY`), lockout after 5 failures for 15 minutes, 30 attempts per IP per 15 minutes, unknown email and wrong password look identical |
 | Vendors | Email and password | Same as admins without TOTP; a login works only while linked to an active vendor |
 
+Staff who lose their phone or password are reset from the server with
+`kitaab reset-staff-login`, which also signs out every session. Admin TOTP
+secrets can be moved to a new `DATA_ENCRYPTION_KEY` with
+`kitaab rotate-encryption-key` (`docs/RUNBOOK.md`, D-052).
+
 Access tokens are JWTs that last 15 minutes. Refresh tokens are random and
 stored hashed. They rotate on every use, and reusing an old one revokes the
 whole session family (stolen-token detection). Disabling a staff member or
@@ -42,9 +47,17 @@ orders assigned to them, and never the customer's price breakdown.
   at once.
 - Admins and vendors download through 5-minute presigned links. Every link
   issued is written to the audit log.
-- The bucket blocks public access and is encrypted (Terraform). Files are
+- The bucket blocks public access, is encrypted and refuses plain HTTP
+  (Terraform). Files are
   purged 7 days after delivery or cancellation, after 24 hours if never
   ordered, and at once for deleted accounts (D-016, D-019).
+
+## Backups
+
+Nightly database dumps go to a separate bucket. The server's backup
+credentials can add dumps but cannot read or delete them, so a compromised
+server cannot destroy its own backups. The bucket is versioned and keeps
+dumps for 35 days (`infra/terraform/backups.tf`).
 
 ## Money
 
@@ -79,6 +92,12 @@ Review (9 October 2026): after the end-to-end scenarios and load tests, all
 for phone numbers, email addresses, JWTs, signed storage URLs and OTP messages.
 None were found. The only phone-shaped matches were request ids.
 
+Repeated on 10 October 2026, after a fix made the worker's task logs visible.
+They had been dropped (Celery's stdout redirect), so the first review could
+not see them. After the end-to-end scenarios and the portal tests, every
+container's log was searched again with the same patterns. Nothing was found,
+and phone numbers appeared only masked (`+92300*****28`).
+
 ## The Android app
 
 Tokens are kept in `flutter_secure_storage` (Android Keystore-backed), and app
@@ -101,5 +120,7 @@ CI runs all three on every push.
 - Turn on ClamAV (`CLAMAV_ENABLED=true`; production requires it).
 - Real payment gateways and couriers must verify their webhooks with the
   signature scheme in the provider's documentation (`docs/INTEGRATIONS.md`).
-- Generate fresh secrets (`docs/DEPLOY.md`) and keep them out of git.
+- Generate fresh secrets (`docs/DEPLOY.md`) and keep them out of git. The
+  API refuses to start with unknown provider names, a short or default
+  secret, or a missing Firebase service account.
 - Leave Sentry's `send_default_pii` off (it is off in code).

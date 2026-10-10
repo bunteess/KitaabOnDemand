@@ -22,6 +22,7 @@ interface so an Apple verifier can be added later.
 Before an iOS release, App Store Review Guideline 4.8 requires Sign in with
 Apple (or an equivalent privacy-focused login) because the app offers Google
 sign-in.
+`docs/RELEASE_MOBILE.md` lists the iOS steps for when that stage starts.
 
 ## D-003 · Python dependencies managed with uv · 2026-10-09
 

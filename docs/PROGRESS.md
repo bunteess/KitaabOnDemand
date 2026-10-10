@@ -148,9 +148,65 @@ behind each choice.
   API and portal, and every app dependency is current.
 - The end-to-end and load test code is linted with the API's rules.
 
+### Phase 7: Release readiness (2026-10-10)
+
+- Production on one server (`infra/docker-compose.prod.yml`):
+  - Caddy with automatic TLS, a one-shot migrate step, the API, worker, beat,
+    ClamAV, the portal, Postgres and Redis;
+  - a `pg_dump` every night at 02:00 Pakistan time, copied to S3 every hour;
+  - only Caddy publishes ports.
+- The production stack was started locally with the release images. It
+  passed HTTPS on both names, redirects, security headers, the portal's API
+  proxy, migrations and seeding. The backup, S3 copy and restore steps were
+  tested with the same scripts against the development database and MinIO.
+- Terraform (`infra/terraform`), validated and planned offline (21
+  resources), never applied:
+  - a private, encrypted, versioned upload bucket with lifecycle rules and
+    CORS;
+  - a separate backup bucket that keeps dumps for 35 days;
+  - least-privilege IAM users for the API and the backups. The backup user
+    can add dumps but never delete them.
+- CI/CD:
+  - an infra job (compose config, `terraform fmt` and `validate`);
+  - the Release workflow on `vX.Y.Z` tags: images to ghcr.io, plus the App
+    Bundle, signed when the upload key secrets exist;
+  - a Deploy workflow that stays disabled until the owner turns it on, and
+    `infra/deploy.sh` for the server.
+- Documents: `DEPLOY.md`, `RUNBOOK.md` (procedures tried on the development
+  stack, except steps that need real AWS or a real provider),
+  `RELEASE_MOBILE.md` (iOS described, deferred), and the
+  final `OWNER_TODO.md` with launch blockers first.
+- Release build sizes (10 October 2026):
+
+  | Build | Size |
+  | --- | --- |
+  | Android App Bundle, prod, release | 57.2 MB uploaded; 9.1–9.7 MB downloaded per phone (9.5 MB on arm64) |
+  | Web portal (`vite build`) | 446 KB in total, 136 KB gzipped: JavaScript 426 KB (131 KB gzipped), CSS 20 KB (4.8 KB gzipped) |
+
+- Found and fixed along the way:
+  - The worker's task logs were silently dropped by Celery's stdout
+    redirect, including purge failures and validation errors. They are now
+    JSON in every Celery process, and the personal-data log review was
+    repeated (`docs/SECURITY.md`).
+  - The webhook endpoints ran database work on the event loop. A busy pool
+    could have frozen a whole API process. A test now fails if any endpoint
+    is async (D-051).
+  - Unknown provider names were silently ignored, and an empty
+    `DATA_ENCRYPTION_KEY` passed the production checks. Both now stop the API
+    from starting.
+  - A `# syntax=` line made image builds fetch from Docker Hub past the
+    mirror, and a Docker Hub outage failed CI (D-005).
+  - There was no way to recover a staff login or rotate the encryption key.
+    They are now `kitaab reset-staff-login` and
+    `kitaab rotate-encryption-key` (D-052).
+  - The Vendors page could not deactivate a vendor's login.
+
 ## Next
 
-- Phase 7: Release readiness.
+- The owner's launch blockers in `docs/OWNER_TODO.md`, then the first release
+  (`docs/DEPLOY.md`).
+- After launch: real provider adapters as their documentation arrives
+  (`docs/INTEGRATIONS.md`), and the iOS stage (D-002).
 
 ## Known limitations of the build environment
 
@@ -158,3 +214,8 @@ behind each choice.
   release AAB and emulator tests run only in CI (D-006).
 - Docker Hub rate-limits the sandbox, so local builds use
   `DOCKER_REGISTRY=mirror.gcr.io` (D-005).
+- `registry.terraform.io` is blocked in the sandbox, so Terraform ran with
+  the AWS provider from `releases.hashicorp.com` through
+  `TF_INIT_FLAGS=-plugin-dir=...`. CI uses the registry.
+- No AWS account is available, so Terraform was planned offline only, and the
+  production stack was tested with S3-compatible storage (MinIO).

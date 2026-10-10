@@ -9,7 +9,8 @@ Nothing here has been run against a real AWS account. Terraform was validated,
 and planned offline (21 resources). The production compose file was started
 locally with the release images and stand-in certificates (10 October 2026).
 That covered TLS on both names, HTTP to HTTPS redirects, security headers, the
-portal's API proxy, migrations, seeding and backups to S3-compatible storage.
+portal's API proxy, migrations and seeding. The backup, S3 copy and restore
+scripts were tested against the development database and MinIO.
 
 ## What runs
 
