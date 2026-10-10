@@ -24,6 +24,28 @@ test("vendors: add a vendor and create a login", async () => {
   expect(await screen.findByText("Temp-7g4K-29xQ")).toBeInTheDocument();
 });
 
+test("vendors: deactivate and reactivate a vendor login", async () => {
+  const user = userEvent.setup();
+  renderApp("/admin/vendors", { as: "ADMIN" });
+  const row = (await screen.findByText("Karachi Binders")).closest("tr")!;
+  await user.click(within(row).getByRole("button", { name: "Logins" }));
+  const logins = await screen.findByRole("dialog", { name: "Karachi Binders: logins" });
+  await user.type(within(logins).getByLabelText("Email"), "leaver@example.com");
+  await user.type(within(logins).getByLabelText("Full name"), "Leaver");
+  await user.click(within(logins).getByRole("button", { name: "Create login" }));
+  await user.click(await screen.findByRole("button", { name: "Done" }));
+  await user.click(
+    await within(logins).findByRole("button", { name: "Deactivate leaver@example.com" }),
+  );
+  expect(
+    await within(logins).findByText(/leaver@example.com · Leaver · inactive/),
+  ).toBeInTheDocument();
+  await user.click(within(logins).getByRole("button", { name: "Reactivate leaver@example.com" }));
+  expect(
+    await within(logins).findByText(/leaver@example.com · Leaver · active/),
+  ).toBeInTheDocument();
+});
+
 test("vendors: edit an existing vendor", async () => {
   const user = userEvent.setup();
   renderApp("/admin/vendors", { as: "ADMIN" });

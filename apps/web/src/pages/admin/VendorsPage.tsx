@@ -185,6 +185,14 @@ function VendorUsers({ vendor, onClose }: { vendor: Vendor; onClose: () => void 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [created, setCreated] = useState<Schemas["StaffUserCreated"] | null>(null);
+  // Deactivating a login signs that person out everywhere (docs/RUNBOOK.md).
+  const update = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: Schemas["StaffUserUpdate"] }) =>
+      unwrap(
+        api.PATCH("/api/v1/admin/staff/{user_id}", { params: { path: { user_id: id } }, body }),
+      ),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: key }),
+  });
   const create = useMutation({
     mutationFn: () =>
       unwrap(
@@ -203,13 +211,36 @@ function VendorUsers({ vendor, onClose }: { vendor: Vendor; onClose: () => void 
   return (
     <Dialog title={`${vendor.name}: logins`} open onClose={onClose}>
       <div className="space-y-4">
+        {update.isError && <ErrorBox message={errorMessage(update.error)} />}
         {users.data && (
-          <ul className="space-y-1 text-sm">
+          <ul className="space-y-2 text-sm">
             {users.data.length === 0 && <li className="text-slate-500">No logins yet.</li>}
             {users.data.map((u) => (
-              <li key={u.id}>
-                {u.email} · {u.full_name} · {u.is_active ? "active" : "inactive"} · last sign-in{" "}
-                {formatDateTime(u.last_login_at)}
+              <li key={u.id} className="flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  {u.email} · {u.full_name} ·{" "}
+                  {u.locked ? "locked" : u.is_active ? "active" : "inactive"} · last sign-in{" "}
+                  {formatDateTime(u.last_login_at)}
+                </span>
+                <span className="flex gap-2">
+                  {u.locked && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => update.mutate({ id: u.id, body: { unlock: true } })}
+                    >
+                      Unlock
+                    </Button>
+                  )}
+                  <Button
+                    variant="secondary"
+                    aria-label={`${u.is_active ? "Deactivate" : "Reactivate"} ${u.email}`}
+                    onClick={() =>
+                      update.mutate({ id: u.id, body: { is_active: !u.is_active, unlock: false } })
+                    }
+                  >
+                    {u.is_active ? "Deactivate" : "Reactivate"}
+                  </Button>
+                </span>
               </li>
             ))}
           </ul>
