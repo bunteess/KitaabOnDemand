@@ -171,6 +171,16 @@ def test_celery_tasks_call_the_jobs(api: "Api", monkeypatch: pytest.MonkeyPatch)
     assert sent == ["/x"]
 
 
+def test_celery_logs_json_without_redirecting_stdout() -> None:
+    """With Celery's stdout redirect on, worker log lines were silently lost."""
+    from celery.signals import setup_logging
+
+    from kitaab.workers.celery_app import app
+
+    assert app.conf.worker_redirect_stdouts is False
+    assert setup_logging.receivers, "Celery would install its own log handlers"
+
+
 def test_celery_queue_sends_by_name(monkeypatch: pytest.MonkeyPatch) -> None:
     from kitaab.container import CeleryTaskQueue
     from kitaab.workers.celery_app import app

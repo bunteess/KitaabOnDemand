@@ -1,11 +1,24 @@
 """Celery application: background jobs and the beat schedule."""
 
+from typing import Any
+
 from celery import Celery
 from celery.schedules import crontab
+from celery.signals import setup_logging
 
 from kitaab.config import get_settings
+from kitaab.logging import configure_logging
 
 settings = get_settings()
+
+
+@setup_logging.connect
+def _json_logs(**_: Any) -> None:
+    """Every Celery process (worker, its children and beat) logs JSON through the
+    same personal-data filter as the API. Connecting this signal also stops
+    Celery from installing its own handlers."""
+    configure_logging(settings.log_level)
+
 
 app = Celery("kitaab", broker=settings.redis_url, backend=None, include=["kitaab.workers.tasks"])
 app.conf.update(
@@ -17,6 +30,9 @@ app.conf.update(
     enable_utc=True,
     broker_connection_retry_on_startup=True,
     worker_hijack_root_logger=False,
+    # Celery's default swaps stdout for a proxy logger in the worker, and a log
+    # handler writing to that proxy silently drops every line.
+    worker_redirect_stdouts=False,
     beat_schedule={
         "expire-quotes": {"task": "expire_quotes", "schedule": crontab(minute="*/5")},
         "expire-pending-payments": {
